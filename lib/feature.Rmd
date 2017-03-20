@@ -1,0 +1,32 @@
+---
+title: "feature"
+author: "Bo Peng (bp2494)"
+date: "March 18, 2017"
+output: html_document
+---
+
+```{python, engine.path = "C:/Anaconda2/Python"}
+import os
+import numpy as np
+import pandas as pd
+import cv2
+os.chdir('C:\\Python')
+path = 'C:\\Python'
+images = os.listdir(path)
+img_data = []
+img_data = pd.DataFrame(img_data)
+
+for image in images:
+    img = cv2.imread(image)
+    gray= cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    sift = cv2.SIFT(nfeatures = 1000)
+    (kps, descs) = sift.detectAndCompute(gray, None)
+    descs_list = descs.tolist()
+    descs_df = pd.DataFrame(descs_list)
+    descs_dft = descs_df.transpose()
+    img_data = img_data.append(descs_dft, ignore_index = True)
+
+img_data = img_data.transpose()
+img_data.to_csv('C:\\data.csv', header = False)
+```
+
