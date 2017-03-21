@@ -61,7 +61,11 @@ train_sift <- t(as.matrix(train_sift))
 #  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
 ############################################################################################
 ###### Uncomment below code to reproduce the tuning process for all models considered ######
-
+##source files that contain tuning functions: 
+source("../lib/xgboost.R")
+source("../lib/svm.R")
+source("../lib/knn.R")
+source("../lib/AdaBag_AdaBoost.R")
 #summary.xgb <- tune.xgb(train_sift,label_train)
 #save(summary.xgb, file="output/summary_best_xgb.RData")
 
@@ -129,6 +133,7 @@ save(summary1,file="../output/summary_best_models1.Rdata")
 
 ```
 
+#### Tune parameters of each model via cross-validation 
 
 ####Summary Table: parameter-tuning process on new features 
 ```{r}
@@ -146,10 +151,11 @@ data.table(Model = ,
 
 
 ###Selecting the *best* Advanced Model  
-####Summary Table of best models tuned on various feature sets  
+####Summary Table of best models tuned on various feature sets (original & new) 
 ```{r}
 
 ```
+
 
 ##Comparing the Baseline Model and the Advanced Model  
 ### Set up controls for evaluation experiments: Baseline Model vs. Advanced Model
@@ -229,7 +235,7 @@ Feed the final training model with the completely holdout testing data.
 ```{r test}
 tm_test=NA
 if(run.test){
-  load(file=paste0("../output/feature_test.RData"))
+  load(file="../output/feature_test.RData")
   load(file="../output/fit_train.RData")
   tm_test <- system.time(pred_test <- test(fit_train, dat_test))
   save(pred_test, file="../output/pred_test.RData")
