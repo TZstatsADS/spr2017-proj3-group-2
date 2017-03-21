@@ -10,8 +10,9 @@ train_labels <- read.csv("data/train/labels.csv")
 train_labels <- as.factor(as.matrix(train_labels)[,1])
 
 #tune parameter k for KNN classification via 10-fold cross-validation
-tune.knn <- function(){
-  obj <- tune.knn(train_sift,train_labels,k=1:5)
+tune.knn <- function(dat_train,label_train){
+  label_train <- as.factor(label_train)
+  obj <- tune.knn(dat_train,label_train,k=1:5)
   best_k <- obj$best.parameters[[1]]
   best_err <- obj$best.performance
 
@@ -20,11 +21,12 @@ tune.knn <- function(){
                             Best_Param_2 = NA, Best_Param_3 = NA,
                             Best_Error = best_err,
                             Training_Time = NA)
-  save(summary.knn, file="output/summary_best_knn.Rdata")
+  #save(summary.knn, file="output/summary_best_knn.Rdata")
   return(summary.knn)
 }
 
 train.knn <- function(dat_train,label_train){
+  label_train <- as.factor(label_train)
   best_k <- 1 #best parameter after tuning with 10-fold cross-validation
   return(best_k) #nothing to train for knn 
 }

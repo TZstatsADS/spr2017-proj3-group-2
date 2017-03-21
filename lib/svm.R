@@ -13,10 +13,11 @@ train_labels <- as.factor(as.matrix(train_labels)[,1])
 #Call this function to reproduce process of tuning params for svm model with linear kernel
 # -- Returns a summary data.table object that details best parameters used 
 #    based on training images and also saves the object in a .RData file 
-tune.svm.lin <- function(){
+tune.svm.lin <- function(dat_train,label_train){
+  label_train <- as.factor(label_train)
   #Tune SVM with linear kernel w/ 10-fold CV; to find best params
   set.seed(8076)
-  cv.out.lin <- tune.svm(train_sift,train_labels,kernel="linear",
+  cv.out.lin <- tune.svm(dat_train,label_train,kernel="linear",
                            cost=c(5e3,1e4,5e4,1e5))
   best_params_lin <- as.list(cv.out.lin$best.parameters)
   best_params_lin <- best_params_lin[1]
@@ -24,7 +25,7 @@ tune.svm.lin <- function(){
   
   
   #train best SVM model with linear kernel from training images
-  run.time.lin <- system.time(svm.lin <- svm(train_sift,train_labels, scale=F,
+  run.time.lin <- system.time(svm.lin <- svm(dat_train,label_train, scale=F,
                                          params=best_params_lin, 
                                          kernel="linear"))
   run.time.lin <- round(run.time.lin[1],3)
@@ -35,7 +36,7 @@ tune.svm.lin <- function(){
              Best_Param_2 = NA, Best_Param_3 = NA,
              Best_Error = cv.out.lin$best.performance,
              Training_Time = paste(run.time.lin, "s"))
-  save(summary.svm.lin, file="output/summary_best_svm_lin.Rdata")
+  #save(summary.svm.lin, file="output/summary_best_svm_lin.Rdata")
   return(summary.svm.lin)
 }
 #tune.svm.lin()
@@ -44,6 +45,7 @@ tune.svm.lin <- function(){
 ##if it's decided that svm with linear kernel is best candidate for advanced model
 ##then source this R file and call this function in train.R
 train.svm.lin <-function(dat_train,label_train){
+  label_train <- as.factor(label_train)
   #best_cost = 5000
   svm.lin <- svm(dat_train,label_train, scale=F,
                  cost=5000, 
@@ -56,7 +58,8 @@ train.svm.lin <-function(dat_train,label_train){
 #Call this function to reproduce process of tuning params for svm model with linear kernel
 # -- Returns a summary data.table object that details best parameters used 
 #    based on training images and also saves the object in a .RData file 
-tune.svm.rad <- function(){
+tune.svm.rad <- function(dat_train,label_train){
+  label_train <- as.factor(label_train)
   #Tune SVM with radial kernel w/ 10-fold CV
   set.seed(1681)
   cv.out.rad <- tune.svm(train_sift,train_labels,kernel="radial",cost=c(5e2,1e3,1e4),
@@ -66,7 +69,7 @@ tune.svm.rad <- function(){
   
   #train best SVM model with radial kernel
 
-  run.time.rad <- system.time(svm.rad <- svm(train_sift,train_labels, scale=F,
+  run.time.rad <- system.time(svm.rad <- svm(dat_train,label_train, scale=F,
                                          params=best_params_rad,
                                          kernel="radial"))
   run.time.rad <- round(run.time.rad[1],3)
@@ -77,7 +80,7 @@ tune.svm.rad <- function(){
              Best_Param_2 = paste("gamma =", best_params_rad[[2]]),
              Best_Param_3 = NA, Best_Error = cv.out.rad$best.performance,
              Training_Time = paste(run.time.rad, "s"))
-  save(summary.svm.rad,file="output/summary_best_svm_rad.Rdata")
+  #save(summary.svm.rad,file="output/summary_best_svm_rad.Rdata")
   return(summary.svm.rad)
 }  
 #tune.svm.rad()
@@ -86,6 +89,7 @@ tune.svm.rad <- function(){
 ##if it's decided that svm with radial kernel is best candidate for advanced model
 ##then source this R file and call this function in train.R
 train.svm.rad <- function(dat_train,label_train){
+  label_train <- as.factor(label_train)
   best_params_rad <- list(cost=500,gamma=2)
   svm.rad <- svm(dat_train,label_train, scale=F,
                  params=best_params_rad,

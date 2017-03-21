@@ -7,7 +7,7 @@ output:
   html_document: default
 ---
 
-This file is currently a template for running evaluation experiments of image analysis (or any predictive modeling). You should update it according to your codes but following precisely the same structure. 
+This file firstly details the model selection process for an advanced binary classification model, that takes in images and classifies them as either a labradoodle ("1") or fried chicken ("0") - simply referred to as the Advanced Model. Secondly, it runs evaluation experiments to compare the Baseline Model - gradient boosting model (gbm) with parameters tuned on the original SIFT features - with our Advanced Model.
 
 ```{r} 
 #Load (and install if necessary) required packages
@@ -24,7 +24,7 @@ library("EBImage")
 library("gbm")
 ```
 
-### Step 0: specify directories.
+### Specify directories.
 
 Set the working directory to the image folder. Specify the training and the testing set. For data without an independent test/validation set, you need to create your own testing data by random subsampling. In order to obain reproducible results, set.seed() whenever randomization is used. 
 
@@ -35,14 +35,129 @@ img_train_dir <- paste(experiment_dir, "train/", sep="")
 img_test_dir <- paste(experiment_dir, "test/", sep="")
 ```
 
-### Set up controls for evaluation experiments.
+### Import class labels for training images  
+We code labradoodles as "1" and fried chicken as "0" for binary classification.
 
-In this chunk, ,we have a set of controls for the evaluation experiments. 
+```{r training_images}
+label_train <- read.csv("data/train/labels.csv")
+label_train <- as.matrix(label_train)[,1]
 
-+ (T/F) train 'best' model
+```
+
+##Selecting the Advanced Model: 
+
+### Model selection with provided SIFT features of training images  
+Import the SIFT features of the set of 2000 training images
+```{r}
+train_sift <- read.csv("data/train/sift_features.csv")
+train_sift <- t(as.matrix(train_sift))
+```
+
+#### Tune parameters of each model via cross-validation  
+```{r}
+#get summary tables of best tuned parameters for each model considered, i.e. lowest cv error
+#6 columns: "Model", "Best_Param_1", "Best_Param_2", "Best_Param_3", 
+#            "Best_Error", "Training_Time"
+#  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
+############################################################################################
+###### Uncomment below code to reproduce the tuning process for all models considered ######
+
+#summary.xgb <- tune.xgb(train_sift,label_train)
+#save(summary.xgb, file="output/summary_best_xgb.RData")
+
+#summary.svm.lin <- tune.svm.lin(train_sift,label_train)
+#save(summary.svm.lin, file="output/summary_best_svm_lin.Rdata")
+
+#summary.svm.rad <- tune.svm.rad(train_sift,label_train)
+#save(summary.svm.rad,file="output/summary_best_svm_rad.Rdata")
+
+#summary.knn <- tune.knn(train_sift,label_train)
+#save(summary.knn, file="output/summary_best_knn.Rdata")
+
+#summary.AdaBag <- tune.AdaBag(train_sift,label_train)
+#save(summary.AdaBag,file="output/summary_best_AdaBag2.Rdata")
+
+#summary.AdaBoost.M1 <- tune.AdaBoost.M1(train_sift,label_train)
+#save(summary.AdaBoost.M1,file="output/summary_best_AdaBoost.M1.Rdata")
+
+#summary.AdaBoost_SAMME <- tune.AdaBoost_SAMME(train_sift,label_train)
+#save(summary.AdaBoost_SAMME,file="output/summary_best_AdaBoost_SAMME.Rdata")
+
+```
+
+####Summary Table: parameter-tuning process on original SIFT features
+Summary table of *best* models (i.e. models with *best* parameters) tuned on original SIFT features of the training set via cross-validation, sorted by CV Error.  
+```{r}
+library(data.table)
+#load already produced summary tables for best tuned parameters for each model considered
+load("../output/summary_best_xgb.RData")
+load("../output/summary_best_svm_lin.Rdata")
+load("../output/summary_best_svm_rad.Rdata")
+load("../output/summary_best_knn.Rdata")
+
+#here we have two separate tables for the AdaBag algorithm
+#   -tuning with cross validation chooses the second one (mfinal=100) 
+#   -factoring in training time, the first one (mfinal=10), is better
+load("../output/summary_best_AdaBag.Rdata") #mfinal=10; higher cv error, but smaller training time
+load("../output/summary_best_AdaBag2.Rdata") #mfinal=100; lower cv error, but larger training time
+
+load("../output/summary_best_AdaBoost.M1.Rdata")
+load("../output/summary_best_AdaBoost_SAMME.Rdata")
+
+#6 columns: "Model", "Best_Param_1", "Best_Param_2", "Best_Param_3", 
+#            "Best_Error", "Training_Time"
+#  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
+summary1 <- rbind(summary.xgb, summary.svm.lin,
+                 summary.svm.rad, summary.AdaBag,
+                 summary.AdaBag2, summary.AdaBoost.M1,
+                 summary.AdaBoost_SAMME,
+                 summary.knn) 
+#sort table by Best_Error in ascending order
+summary1 <- summary1[order(summary$Best_Error)]
+
+#add column for feature set models are tuned on
+(summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",8), summary1[,2:6]))
+
+save(summary1,file="../output/summary_best_models1.Rdata")
+
+```
+
+
+### Model selection with new visual features  
+####Import sets of new visual features  
+```{r}
+
+```
+
+
+####Summary Table: parameter-tuning process on new features 
+```{r}
+#load Rdata files
+load("../output/summary_best_models1.Rdata")
+
+data.table(Model = ,
+           Features = ,
+           Best_Param_1 = ,
+           Best_Param_2 = ,
+           Best_Param_3 = ,
+           Best_CV_Error = ,
+           Training_Time = )
+```
+
+
+###Selecting the *best* Advanced Model  
+####Summary Table of best models tuned on various feature sets  
+```{r}
+
+```
+
+##Comparing the Baseline Model and the Advanced Model  
+### Set up controls for evaluation experiments: Baseline Model vs. Advanced Model
+
++ (T/F) train Baseline Model and Advanced Model
 + (T/F) process features for training set
-+ (T/F) run evaluation on an independent test set
-+ (T/F) run evaluation on an independent test set
++ (T/F) run evaluation on an independent test set for both Baseline Model and Advanced Model
++ (T/F) process features for test set
 
 ```{r exp_setup}
 run.train=TRUE # train 'best' model 
@@ -51,16 +166,9 @@ run.test=FALSE # run evaluation on an independent test set
 run.feature.test=FALSE # process features for test set
 ```
 
-### Import class labels for training images  
-We code labradoodles as "1" and fried chicken as "0" for binary classification.
 
-```{r training_images}
-train_labels <- train_labels <- read.csv("data/train/labels.csv")
-train_labels <- as.matrix(train_labels)[,1]
-```
-
-### Construct visual features
-Save the constructed features to the output subfolder.
+### Construct the visual features  
+These features are to be used in training and testing of our Baseline and Advanced model. Save the constructed features to the output subfolder.
 
 `feature.R` should be the wrapper for all your feature engineering functions and options. The function `feature( )` should have options that correspond to different scenarios for your project and produces an R object that contains features that are required by all the models you are going to evaluate later. 
 
@@ -87,7 +195,8 @@ if(run.feature.test){
 #save(dat_test, file="./output/feature_test.RData")
 ```
 
-### Step 4: Train a classification model with training images
+
+### Train a classification model with training images
 Call the train model and test model from library. 
 
 `train.R` and `test.R` should be wrappers for all your model training steps and your classification/prediction steps. 
@@ -103,6 +212,7 @@ Call the train model and test model from library.
 source("../lib/train.R")
 source("../lib/test.R")
 ```
+
 
 * Train the baseline and advanced models with the entire training set using the selected models ('best' model parameters) via cross-validation.
 ```{r final_train}

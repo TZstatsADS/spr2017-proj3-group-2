@@ -19,7 +19,9 @@ Dtrain_sift <- xgb.DMatrix(data=train_sift,label=train_labels)
 #Call this function to reproduce process of tuning params for xgb model via CV
 # -- Returns a summary data.table object that details best parameters used 
 #    based on training images and also saves the object in a .RData file 
-tune.xgb <- function(){
+tune.xgb <- function(dat_train,label_train){
+  #create xgb.DMatrix object for input (recommended)
+  Dtrain_sift <- xgb.DMatrix(data=dat_train,label=label_train)
   #set empty variables 
   best_params <- list() ; best_err <- Inf 
   best_nrounds <- NULL
@@ -78,7 +80,7 @@ tune.xgb <- function(){
              Best_Param_3 = paste("nrounds =", best_nrounds),
              Best_Error = best_err,
              Training_Time = paste(run.time, "s"))
-  save(summary.xgb, file="output/summary_best_xgb.RData")
+  #save(summary.xgb, file="output/summary_best_xgb.RData")
   return(summary.xgb)
 }
 #tune.xgb()

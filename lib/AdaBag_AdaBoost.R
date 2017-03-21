@@ -12,7 +12,8 @@ train_labels <- as.factor(as.matrix(train_labels)[,1])
 # -- Returns a summary data.table object that details best parameters used 
 #    based on training images and also saves the object in a .RData file 
 
-tune.AdaBag <- function(){
+tune.AdaBag <- function(dat_train,label_train){
+  label_train <- as.factor(label_train)
   #tune mfinal parameter; find best number of iterations via 5-fold CV
   best_err <- Inf ; best_iter <- NULL
   cv.output.list <- list()
@@ -21,8 +22,8 @@ tune.AdaBag <- function(){
   set.seed(300)
   for (i in 1:2){
     mfinal.val <- mfinal.vals[i]
-    cv.output <- bagging.cv(train_labels~.,v=5,
-                            data=data.frame(train_labels,train_sift),
+    cv.output <- bagging.cv(label_train~.,v=5,
+                            data=data.frame(label_train,dat_train),
                             mfinal=mfinal.val, 
                             control=rpart.control(maxdepth=5))
     cv.output.list[[i]] <- cv.output
@@ -36,8 +37,8 @@ tune.AdaBag <- function(){
   }
   
   #fit bagging algorithm using classification trees as single classifiers
-  run.time <- system.time(AdaBag <- bagging(train_labels~.,
-                                            data=data.frame(train_labels,train_sift),
+  run.time <- system.time(AdaBag <- bagging(label_train~.,
+                                            data=data.frame(label_train,dat_train),
                                             mfinal=best_iter,
                                             control=rpart.control(maxdepth=5)))
   run.time <- round(run.time[1],3)
@@ -49,7 +50,7 @@ tune.AdaBag <- function(){
                             Best_Param_3 = NA,
                             Best_Error = best_err,
                             Training_Time = paste(run.time[1], "s"))
-  save(summary.AdaBag,file="output/summary_best_AdaBag.Rdata")
+  #save(summary.AdaBag,file="output/summary_best_AdaBag.Rdata")
   return(summary.AdaBag)
 }
 #tune.AdaBag()
@@ -76,7 +77,8 @@ train.AdaBag <- function(dat_train,label_train){
 # -- Returns a summary data.table object that details best parameters used 
 #    based on training images and also saves the object in a .RData file 
 
-tune.AdaBoost.M1 <- function(){
+tune.AdaBoost.M1 <- function(dat_train,label_train){
+  label_train <- as.factor(label_train)
   #tune mfinal parameter; find best number of iterations via 10-fold CV
   best_err <- Inf ; best_iter <- NULL
   cv.output.list <- list()
@@ -85,8 +87,8 @@ tune.AdaBoost.M1 <- function(){
   for (i in 1:3){
     mfinal.val <- mfinal.vals[i]
     #AdaBoost.M1 algorithm 
-    cv.output <- boosting.cv(train_labels~.,
-                             data=data.frame(train_labels,train_sift),
+    cv.output <- boosting.cv(label_train~.,
+                             data=data.frame(label_train,dat_train),
                              mfinal=mfinal.val,
                              coeflearn="Freund",
                              control=rpart.control(maxdepth=3))
@@ -101,8 +103,8 @@ tune.AdaBoost.M1 <- function(){
   }
   
   #fit AdaBoost.M1 algorithm using classification trees as single classifiers
-  run.time <- system.time(AdaBoost.M1 <- boosting(train_labels~.,
-                                                  data=data.frame(train_labels,train_sift),
+  run.time <- system.time(AdaBoost.M1 <- boosting(label_train~.,
+                                                  data=data.frame(label_train,dat_train),
                                                   mfinal=best_iter,
                                                   coeflearn="Freund",
                                                   control=rpart.control(maxdepth=3)))
@@ -115,7 +117,7 @@ tune.AdaBoost.M1 <- function(){
                             Best_Param_3 = NA,
                             Best_Error = best_err,
                             Training_Time = paste(run.time, "s"))
-  save(summary.AdaBoost.M1,file="output/summary_best_AdaBoost.M1.Rdata")
+  #save(summary.AdaBoost.M1,file="output/summary_best_AdaBoost.M1.Rdata")
   return(summary.AdaBoost.M1)
 }
 #tune.AdaBoost.M1()
@@ -145,7 +147,8 @@ train.AdaBoost.M1 <- function(dat_train,label_train){
 # -- Returns a summary data.table object that details best parameters used 
 #    based on training images and also saves the object in a .RData file 
 
-tune.AdaBoost_SAMME <- function(){
+tune.AdaBoost_SAMME <- function(dat_train,label_train){
+  label_train <- as.factor(label_train)
   #tune mfinal parameter; find best number of iterations via 10-fold CV
   best_err <- Inf ; best_iter <- NULL
   cv.output.list <- list()
@@ -154,8 +157,8 @@ tune.AdaBoost_SAMME <- function(){
   for (i in 1:5){
     mfinal.val <- mfinal.vals[i]
     #AdaBoost SAMME algorithm 
-    cv.output <- boosting.cv(train_labels~.,
-                             data=data.frame(train_labels,train_sift),
+    cv.output <- boosting.cv(label_train~.,
+                             data=data.frame(label_train,dat_train),
                              mfinal=mfinal.val,
                              coeflearn="Zhu",
                              control=rpart.control(maxdepth=3))
@@ -170,8 +173,8 @@ tune.AdaBoost_SAMME <- function(){
   }
   
   #fit AdaBoost_SAMME algorithm using classification trees as single classifiers
-  run.time <- system.time(AdaBoost_SAMME <- boosting(train_labels~.,
-                                                     data=data.frame(train_labels,train_sift),
+  run.time <- system.time(AdaBoost_SAMME <- boosting(label_train~.,
+                                                     data=data.frame(label_train,dat_train),
                                                      mfinal=best_iter,
                                                      coeflearn="Zhu",
                                                      control=rpart.control(maxdepth=3)))
@@ -184,7 +187,7 @@ tune.AdaBoost_SAMME <- function(){
                             Best_Param_3 = NA,
                             Best_Error = best_err,
                             Training_Time = paste(run.time, "s"))
-  save(summary.AdaBoost_SAMME,file="output/summary_best_AdaBoost_SAMME.Rdata")
+  #save(summary.AdaBoost_SAMME,file="output/summary_best_AdaBoost_SAMME.Rdata")
   return(summary.AdaBoost_SAMME)
 }
 #tune.AdaBoost_SAMME()
