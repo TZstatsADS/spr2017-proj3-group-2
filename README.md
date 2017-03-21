@@ -1,11 +1,11 @@
-# Project: Labradoodle or Fried Chicken? In Blakc and White. 
+# Project: Labradoodle or Fried Chicken? In Black and White. 
 ![image](figs/poodleKFC.jpg)
 
 ### [Full Project Description](doc/project3_desc.html)
 
 Term: Spring 2017
 
-+ Team #
++ Team #2
 + Team members
 	+ team member 1
 	+ team member 2
