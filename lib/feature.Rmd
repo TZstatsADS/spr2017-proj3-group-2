@@ -1,0 +1,59 @@
+---
+title: "Feature2"
+author: "Yingxin Zhang (yz3032)"
+date: "3/21/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library("EBImage")
+library(stringr)
+
+```
+
+```{r}
+img_dir <- "./training_data/raw_images"
+n_files <- length(list.files(img_dir))
+
+```
+
+```{r}
+###method 1 : resize+threshold
+###build a new folder named newraw_images
+for(i in 1:n_files){
+  ii <- str_pad(i, 4, pad = "0")
+  img <- readImage(paste0(img_dir, "/","image_", ii,".jpg"))
+  img1 <- resize(img,512,512)
+  img2 <- thresh(img1, w=60, h=60, offset=0.06)
+  writeImage(img2,file = paste0("./training_data/newraw_images/", "image_",ii,".jpg"))
+}
+```
+
+```{r}
+###method2 : resize
+###build a new folder named newraw_images1
+for(i in 1:n_files){
+  ii <- str_pad(i, 4, pad = "0")
+  img <- readImage(paste0(img_dir, "/","image_", ii,".jpg"))
+  img1 <- resize(img,512,512)
+  #img2 <- thresh(img1, w=60, h=60, offset=0.06)
+  writeImage(img1,file = paste0("./training_data/newraw_images1/", "image_",ii,".jpg"))
+}
+```
+
+```{r}
+###method3: threshold
+###build a new folder named newraw_images2
+for(i in 1:n_files){
+  ii <- str_pad(i, 4, pad = "0")
+  img <- readImage(paste0(img_dir, "/","image_", ii,".jpg"))
+  #img1 <- resize(img,512,512)
+  img2 <- thresh(img, w=60, h=60, offset=0.06)
+  writeImage(img2,file = paste0("./training_data/newraw_images2/", "image_",ii,".jpg"))
+}
+```
+
