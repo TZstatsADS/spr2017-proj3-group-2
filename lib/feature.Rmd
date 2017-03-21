@@ -16,7 +16,7 @@ library(stringr)
 ```
 
 ```{r}
-img_dir <- "./training_data/raw_images"
+img_dir <- "C://training_data/raw_images"
 n_files <- length(list.files(img_dir))
 
 ```
@@ -29,7 +29,7 @@ for(i in 1:n_files){
   img <- readImage(paste0(img_dir, "/","image_", ii,".jpg"))
   img1 <- resize(img,512,512)
   img2 <- thresh(img1, w=60, h=60, offset=0.06)
-  writeImage(img2,file = paste0("./training_data/newraw_images/", "image_",ii,".jpg"))
+  writeImage(img2,file = paste0("C://training_data/newraw_images/", "image_",ii,".jpg"))
 }
 ```
 
@@ -41,7 +41,7 @@ for(i in 1:n_files){
   img <- readImage(paste0(img_dir, "/","image_", ii,".jpg"))
   img1 <- resize(img,512,512)
   #img2 <- thresh(img1, w=60, h=60, offset=0.06)
-  writeImage(img1,file = paste0("./training_data/newraw_images1/", "image_",ii,".jpg"))
+  writeImage(img1,file = paste0("C://training_data/newraw_images1/", "image_",ii,".jpg"))
 }
 ```
 
@@ -53,7 +53,7 @@ for(i in 1:n_files){
   img <- readImage(paste0(img_dir, "/","image_", ii,".jpg"))
   #img1 <- resize(img,512,512)
   img2 <- thresh(img, w=60, h=60, offset=0.06)
-  writeImage(img2,file = paste0("./training_data/newraw_images2/", "image_",ii,".jpg"))
+  writeImage(img2,file = paste0("C://training_data/newraw_images2/", "image_",ii,".jpg"))
 }
 ```
 
