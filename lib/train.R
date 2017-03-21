@@ -39,6 +39,10 @@ train <- function(dat_train, label_train){
   #source("***.R")
   #best_fit_adv <- train.***(dat_train,label_train)
   
+  best_params <- list(max_depth=5, eta=.5, nrounds=169) #e.g. tuned on SIFT features
+  best_fit_adv <- train.xgb(dat_train,label_train,par_list=best_parms)
+  
+  
 ##########============OUTPUT DATA============##########
   
   # output = list(baseline_fit = gbm.object , advanced_fit =  *** object)
