@@ -42,7 +42,7 @@ Term: Spring 2017
 	+ Wrote function to tune (i.e. find best subset of predictors) Logistic Regression model and function to train *best* Logistic Regression model; tuned & trained based on SIFT features 
 
 
-Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
+Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is organized as follows.
 
 ```
 proj/
