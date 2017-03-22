@@ -61,13 +61,13 @@ train_sift <- t(as.matrix(train_sift))
 
 #### Tune parameters of each model via cross-validation  
 Set up control for tuning models under consideration based on the provided SIFT features of the training images.  
-+ (T/F) train Baseline Model and Advanced Model
++ (T/F) tune models under consideration based on provided SIFT features  
 ```{r}
 ###### T/F to reproduce the tuning process for all models considered ######
 run.tune.sift = FALSE
 ```
 
-
+* Parameter-tuning process:  
 ```{r}
 #get summary tables of best tuned parameters for each model considered, i.e. lowest cv error
 #6 columns: "Model", "Best_Param_1", "Best_Param_2", "Best_Param_3", 
