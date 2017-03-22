@@ -1,7 +1,14 @@
-## Function to tune parameters of xgboost model with given SIFT features of 
-#   training images
-## Function to train data to fit xgboost model given the 'best' params from 
-#   tuning via cross-validation 
+### Author: Ka Heng (Helen) Lo
+### Project 3
+### ADS Spring 2017
+#############================  Description  ================#############
+##This file contains two functions:
+#   1) Function to tune parameters of xgboost model with input set of features 
+#      of training images
+#   2) Function to train data to fit xgboost model given the 'best' params from 
+#      tuning via cross-validation 
+#########################################################################
+
 require(xgboost)
 require(data.table)
 

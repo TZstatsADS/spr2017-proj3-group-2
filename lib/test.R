@@ -1,10 +1,10 @@
+### Author: Ka Heng (Helen) Lo
+### Project 3
+### ADS Spring 2017
 ######################################################
 ### Fit the classification model with testing data ###
 ######################################################
 
-### Author: Ka Heng (Helen) Lo
-### Project 3
-### ADS Spring 2017
 
 test <- function(fit_train, dat_test){
   

@@ -23,6 +23,9 @@ if(!require("gbm")){
 library(EBImage)
 library(gbm)
 library(data.table)
+library(e1071)
+library(class)
+library(adabag)
 ```
 
 ### Specify directories.

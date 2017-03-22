@@ -1,3 +1,6 @@
+### Author: Ka Heng (Helen) Lo
+### Project 3
+### ADS Spring 2017
 #############################################################################
 ### Train baseline and advanced classification model with training images ###
 #############################################################################
