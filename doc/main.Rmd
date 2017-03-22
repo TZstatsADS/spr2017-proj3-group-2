@@ -154,7 +154,14 @@ new_train_feat2 <-
 new_train_feat3 <- 
 ```
 
-#### Tune parameters of each model via cross-validation 
+#### Tune parameters of each model via cross-validation  
+* Set up control for tuning models under consideration based on the provided SIFT features of the training images.  
++ (T/F) tune models under consideration based on three new sets of visual features  
+```{r}
+###### T/F to reproduce the tuning process for all models considered ######
+run.tune.sift = FALSE
+```
+* Parameter-tuning process:  
 ```{r}
 ##NOTE: Uncomment the specified chunks of code to reproduce the parameter-tuning process
 ##      for the xgBoost model on the three new feature set and the gbm on the three new feature sets
@@ -205,22 +212,25 @@ load("../output/summary_best_gbm_new1.Rdata")
 load("../output/summary_best_gbm_new2.Rdata")
 load("../output/summary_best_gbm_new3.Rdata")
 
-data.table(Model = ,
-           Features = ,
-           Best_Param_1 = ,
-           Best_Param_2 = ,
-           Best_Param_3 = ,
-           Best_CV_Error = ,
-           Training_Time = )
+#data.table(Model = ,
+#           Features = ,
+#           Best_Param_1 = ,
+#           Best_Param_2 = ,
+#           Best_Param_3 = ,
+#           Best_CV_Error = ,
+#           Training_Time = )
+
+#summary2 <- 
+#save(summary2,file="../output/summary_best_models2.Rdata")
 ```
 
 
 ###Selecting the *best* Advanced Model  
-####Summary Table of best models tuned on various feature sets (original & new) 
+####Summary Table of best models tuned on various feature sets (original SIFT & new) 
 ```{r}
 #load Rdata files 
 load("../output/summary_best_models1.Rdata")
-
+load("../output/summary_best_models2.Rdata")
 ```
 
 
