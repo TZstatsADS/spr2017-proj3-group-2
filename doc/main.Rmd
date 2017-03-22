@@ -158,10 +158,11 @@ new_train_feat3 <-
 ```{r}
 ##NOTE: Uncomment the specified chunks of code to reproduce the parameter-tuning process
 ##      for the xgBoost model on the three new feature set and the gbm on the three new feature sets
-#########============Uncomment Code Below============#########
-#source("../lib/xgboost.R")
-#source("../lib/bl.tune.R")
-#########============================================#########
+
+if (run.tune.new)
+  source("../lib/xgboost.R")
+  source("../lib/bl.tune.R")
+
 
 ###******* Tune for xgBoost
 #  1)tune on the first set of new visual features for the training images
