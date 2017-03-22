@@ -30,11 +30,14 @@ Term: Spring 2017
 	
 + Jia Hui Tan: 
 	+ Wrote function to tune GBM (baseline model) and function to train *best* GBM; tuned & trained based on SIFT features and three new feature sets
+	
 + Bo Peng: 
 	+ 
 	+ Prepared presentation
+	
 + Yingxin Zhang: 
 	+ 
+	
 + Yao Tvan: 
 	+ Wrote function to tune (i.e. find best subset of predictors) Logistic Regression model and function to train *best* Logistic Regression model; tuned & trained based on SIFT features 
 
