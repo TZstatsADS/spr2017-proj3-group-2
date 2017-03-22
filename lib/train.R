@@ -16,15 +16,15 @@ train <- function(dat_train, label_train){
 ##########============BASELINE MODEL============##########
   ### Train with gradient boosting model
     ##use 'best' parameters from training images
-   #best_params <-  
-   #best_fit_base <- 
+   best_params <-  list(ntrees=64, shrinkage=0.16) #tuned on sift features 
+   best_fit_base <- train.bl(dat_train, label_train, par_list=best_params)
 
 ##########============ADVANCED MODEL============##########
   #source("***.R")
   #best_fit_adv <- train.***(dat_train,label_train)
   
   best_params <- list(max_depth=5, eta=.5, nrounds=169) #e.g. tuned on SIFT features
-  best_fit_adv <- train.xgb(dat_train,label_train,par_list=best_parms)
+  best_fit_adv <- train.xgb(dat_train,label_train,par_list=best_params)
   
   
 ##########============OUTPUT DATA============##########
