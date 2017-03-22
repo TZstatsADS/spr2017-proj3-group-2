@@ -20,8 +20,9 @@ if(!require("gbm")){
   install.packages("gbm")
 }
 
-library("EBImage")
-library("gbm")
+library(EBImage)
+library(gbm)
+library(data.table)
 ```
 
 ### Specify directories.
@@ -61,11 +62,12 @@ train_sift <- t(as.matrix(train_sift))
 #  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
 ############################################################################################
 ###### Uncomment below code to reproduce the tuning process for all models considered ######
-##source files that contain tuning functions: 
-source("../lib/xgboost.R")
-source("../lib/svm.R")
-source("../lib/knn.R")
-source("../lib/AdaBag_AdaBoost.R")
+
+#source("../lib/xgboost.R")
+#source("../lib/svm.R")
+#source("../lib/knn.R")
+#source("../lib/AdaBag_AdaBoost.R")
+
 #summary.xgb <- tune.xgb(train_sift,label_train)
 #save(summary.xgb, file="output/summary_best_xgb.RData")
 
@@ -140,15 +142,46 @@ new_train_feat3 <-
 
 #### Tune parameters of each model via cross-validation 
 ```{r}
-source
-#tune for xgBoost
-tune.xgb(new_train_feat1,label_train)
-tune.xgb(new_train_feat2,label_train)
-tune.xgb(new_train_feat3,label_train)
-#tune for gbm 
-bl.tune()
-bl.tune()
-bl.tune()
+##NOTE: Uncomment the specified chunks of code to reproduce the parameter-tuning process
+##      for the xgBoost model on the three new feature set and the gbm on the three new feature sets
+#########============Uncomment Code Below============#########
+#source("../lib/xgboost.R")
+#source("../lib/bl.tune.R")
+#########============================================#########
+
+###******* Tune for xgBoost
+#  1)tune on the first set of new visual features for the training images
+#########============Uncomment Code Below============#########
+#summary.xgb.new1 <- tune.xgb(new_train_feat1,label_train)
+#save(summary.xgb.new1,file="../output/summary_best_xgb_new1.Rdata")
+#########============================================#########
+#  2)tune on the second set of new visual features for the training images
+#########============Uncomment Code Below============#########
+summary.xgb.new2 <- tune.xgb(new_train_feat2,label_train)
+save(summary.xgb.new2,file="../output/summary_best_xgb_new2.Rdata")
+#########============================================#########
+#  3)tune on the third set of new visual features for the training images
+#########============Uncomment Code Below============#########
+summary.xgb.new3 <- tune.xgb(new_train_feat3,label_train)
+save(summary.xgb.new3,file="../output/summary_best_xgb_new3.Rdata")
+#########============================================#########
+
+###******* Tune for gbm 
+#  1)tune on the first set of new visual features for the training images
+#########============Uncomment Code Below============#########
+summary.gbm.new1 <- bl.tune()
+save(summary.gbm.new1,file="../output/summary_best_gbm_new1.Rdata")
+#########============================================#########
+#  2)tune on the second set of new visual features for the training images
+#########============Uncomment Code Below============#########
+summary.gbm.new2 <- bl.tune()
+save(summary.gbm.new2,file="../output/summary_best_gbm_new2.Rdata")
+#########============================================#########
+#  3)tune on the third set of new visual features for the training images
+#########============Uncomment Code Below============#########
+summary.gbm.new3 <- bl.tune()
+save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
+#########============================================#########
 ```
 
 
@@ -239,10 +272,12 @@ source("../lib/test.R")
 
 * Train the baseline and advanced models with the entire training set using the selected models ('best' model parameters) via cross-validation.
 ```{r final_train}
+#Here, we call train() from train.R
+#   -note that train() returns a list of two model objects: list(baseline_fit,advanced_fit)
 tm_train=NA
 if(run.train){
   load(file="../output/feature_train.RData")
-  tm_train <- system.time(fit_train <- train(dat_train, train_labels))
+  tm_train <- system.time(fit_train <- train(dat_train, label_train))
   save(fit_train, file="../output/fit_train.RData")
 }
 ```

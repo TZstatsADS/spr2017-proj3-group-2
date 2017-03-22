@@ -5,13 +5,13 @@
 require(xgboost)
 require(data.table)
 
-train_sift <- read.csv("data/train/sift_features.csv")
-train_sift <- t(as.matrix(train_sift))
-train_labels <- read.csv("data/train/labels.csv")
-train_labels <- as.matrix(train_labels)[,1]
+#train_sift <- read.csv("data/train/sift_features.csv")
+#train_sift <- t(as.matrix(train_sift))
+#train_labels <- read.csv("data/train/labels.csv")
+#train_labels <- as.matrix(train_labels)[,1]
 
 #create xgb.DMatrix object for input (recommended)
-Dtrain_sift <- xgb.DMatrix(data=train_sift,label=train_labels)
+#Dtrain_sift <- xgb.DMatrix(data=train_sift,label=train_labels)
 #dim(Dtrain_sift)
 
 ##############################################################################

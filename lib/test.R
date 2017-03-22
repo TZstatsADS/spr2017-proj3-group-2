@@ -2,9 +2,9 @@
 ### Fit the classification model with testing data ###
 ######################################################
 
-### Author: Yuting Ma
+### Author: Ka Heng (Helen) Lo
 ### Project 3
-### ADS Spring 2016
+### ADS Spring 2017
 
 test <- function(fit_train, dat_test){
   
@@ -16,11 +16,21 @@ test <- function(fit_train, dat_test){
   ### Output: training model specification
   
   ### load libraries
-  library("gbm")
+  library(gbm)
+  library(xgboost)
   
-  pred <- predict(fit_train$fit, newdata=dat_test, 
-                  n.trees=fit_train$iter, type="response")
+  ##########============BASELINE MODEL============##########
   
-  return(as.numeric(pred> 0.5))
+  pred_base <- predict(fit_train$baseline_fit, newdata=dat_test, 
+                       type="response")
+  
+  ##########============ADVANCED MODEL============##########
+  
+  pred_adv <- predict(fit_train$advanced_fit, newdata=dat_test)
+
+  ##########============OUTPUT DATA============##########
+  output <- list(baseline_pred=as.numeric(pred_base > 0.5), 
+                 advanced_pred=as.numeric(pred_adv > 0.5))
+  return(output)
 }
 
