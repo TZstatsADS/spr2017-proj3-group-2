@@ -60,39 +60,48 @@ train_sift <- t(as.matrix(train_sift))
 ```
 
 #### Tune parameters of each model via cross-validation  
+Set up control for tuning models under consideration based on the provided SIFT features of the training images.  
++ (T/F) train Baseline Model and Advanced Model
+```{r}
+###### T/F to reproduce the tuning process for all models considered ######
+run.tune.sift = FALSE
+```
+
+
 ```{r}
 #get summary tables of best tuned parameters for each model considered, i.e. lowest cv error
 #6 columns: "Model", "Best_Param_1", "Best_Param_2", "Best_Param_3", 
 #            "Best_Error", "Training_Time"
 #  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
 ############################################################################################
-###### Uncomment below code to reproduce the tuning process for all models considered ######
 
-#source("../lib/xgboost.R")
-#source("../lib/svm.R")
-#source("../lib/knn.R")
-#source("../lib/AdaBag_AdaBoost.R")
+if(run.tune.sift) {
+  source("../lib/xgboost.R")
+  source("../lib/svm.R")
+  source("../lib/knn.R")
+  source("../lib/AdaBag_AdaBoost.R")
 
-#summary.xgb <- tune.xgb(train_sift,label_train)
-#save(summary.xgb, file="output/summary_best_xgb.RData")
+  summary.xgb <- tune.xgb(train_sift,label_train)
+  #save(summary.xgb, file="output/summary_best_xgb.RData")
 
-#summary.svm.lin <- tune.svm.lin(train_sift,label_train)
-#save(summary.svm.lin, file="output/summary_best_svm_lin.Rdata")
+  summary.svm.lin <- tune.svm.lin(train_sift,label_train)
+  #save(summary.svm.lin, file="output/summary_best_svm_lin.Rdata")
 
-#summary.svm.rad <- tune.svm.rad(train_sift,label_train)
-#save(summary.svm.rad,file="output/summary_best_svm_rad.Rdata")
+  summary.svm.rad <- tune.svm.rad(train_sift,label_train)
+  #save(summary.svm.rad,file="output/summary_best_svm_rad.Rdata")
 
-#summary.knn <- tune.knn(train_sift,label_train)
-#save(summary.knn, file="output/summary_best_knn.Rdata")
+  summary.knn <- tune.knn(train_sift,label_train)
+  #save(summary.knn, file="output/summary_best_knn.Rdata")
 
-#summary.AdaBag <- tune.AdaBag(train_sift,label_train)
-#save(summary.AdaBag,file="output/summary_best_AdaBag2.Rdata")
+  summary.AdaBag <- tune.AdaBag(train_sift,label_train)
+  #save(summary.AdaBag,file="output/summary_best_AdaBag2.Rdata")
 
-#summary.AdaBoost.M1 <- tune.AdaBoost.M1(train_sift,label_train)
-#save(summary.AdaBoost.M1,file="output/summary_best_AdaBoost.M1.Rdata")
+  summary.AdaBoost.M1 <- tune.AdaBoost.M1(train_sift,label_train)
+  #save(summary.AdaBoost.M1,file="output/summary_best_AdaBoost.M1.Rdata")
 
-#summary.AdaBoost_SAMME <- tune.AdaBoost_SAMME(train_sift,label_train)
-#save(summary.AdaBoost_SAMME,file="output/summary_best_AdaBoost_SAMME.Rdata")
+  summary.AdaBoost_SAMME <- tune.AdaBoost_SAMME(train_sift,label_train)
+  #save(summary.AdaBoost_SAMME,file="output/summary_best_AdaBoost_SAMME.Rdata")
+}
 
 ```
 
@@ -235,49 +244,32 @@ run.feature.test=FALSE # process features for test set
 ```
 
 ### Import given SIFT features new visual features of the test set  
+We construct the new visual features outside of R/Rstudio, so we just import the .csv files with the new feature data.
 ```{r}
-#Recall for training set we have: 
+#Recall for the training set we imported the .csv files before. So we have:
 dat_train_sift <- train_sift
 dat_train_new <- new_train_feat1  #or new_train_feat2 or new_train_feat3
+if (run.feature.train){
+  dat_train_sift <- read.csv("../data/train/sift_features_train.csv")
+  dat_train_sift <- t(as.matrix(dat_train_sift))
+  
+  dat_train_new <- read.csv("../data/train/new_features_train.csv")
+  dat_train_new <- t(as.matrix(dat_train_new))
+}
 
 ##Now for the test set: 
-#Import the provide SIFT features of the test set
-dat_test_sift <- read.csv("../data/test/sift_features.csv")
-dat_test_sift <- t(as.matrix(dat_test_sift))
-#Import the set of new visual features (constructed outside of R)
-dat_test_new <- read.csv("../data/test/new_features.csv")  #or other file name
-dat_test_new <- t(as.matrix(dat_test_new))
-
-```
-
-### Construct the new visual features   
-These features are to be used in training and testing of our Baseline and Advanced model. Save the constructed features to the output subfolder.
-
-`feature.R` should be the wrapper for all your feature engineering functions and options. The function `feature( )` should have options that correspond to different scenarios for your project and produces an R object that contains features that are required by all the models you are going to evaluate later. 
-
-```{r feature}
-source("../lib/feature.R")
-
-tm_feature_train <- NA
-if(run.feature.train){
-  tm_feature_train <- system.time(dat_train <- feature(img_train_dir, 
-                                                       "train", 
-                                                       data_name="zip", 
-                                                       export=TRUE))
+if (run.feature.test){
+  #Import the provide SIFT features of the test set
+  dat_test_sift <- read.csv("../data/test/sift_features_test.csv")
+  dat_test_sift <- t(as.matrix(dat_test_sift))
+  #Import the set of new visual features (constructed outside of R)
+  dat_test_new <- read.csv("../data/test/new_features_test.csv")  #or other file name
+  dat_test_new <- t(as.matrix(dat_test_new))
 }
 
-tm_feature_test <- NA
-if(run.feature.test){
-  tm_feature_test <- system.time(dat_test <- feature(img_test_dir, 
-                                                     "test", 
-                                                     data_name="zip", 
-                                                     export=TRUE))
-}
-
-#save(dat_train, file="./output/feature_train.RData")
-#save(dat_test, file="./output/feature_test.RData")
+#tm_feature_train = NA
+#tm_feature_test = NA
 ```
-
 
 ### Train a classification model with training images
 `train.R` and `test.R` should be wrappers for all your model training steps and your classification/prediction steps. 
