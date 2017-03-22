@@ -44,8 +44,10 @@ We code labradoodles as "1" and fried chicken as "0" for binary classification.
 
 ```{r training_images}
 label_train <- read.csv("../data/train/labels.csv")
-label_train <- as.matrix(label_train)[,1]
-
+label_train <- as.matrix(label_train)[,1]  
+#some of our models require labels to be numeric in [0,1], so we keep the labels as 0's and 1's
+#for any model that requires labels to be factors we pass the labels to the tune or train function
+#specific to the model as numeric values and coerce them inside the function to be factors
 ```
 
 ##Selecting the Advanced Model: 
@@ -213,6 +215,7 @@ data.table(Model = ,
 ```{r}
 #load Rdata files 
 load("../output/summary_best_models1.Rdata")
+
 ```
 
 
@@ -231,8 +234,23 @@ run.test=FALSE # run evaluation on an independent test set
 run.feature.test=FALSE # process features for test set
 ```
 
+### Import given SIFT features new visual features of the test set  
+```{r}
+#Recall for training set we have: 
+dat_train_sift <- train_sift
+dat_train_new <- new_train_feat1  #or new_train_feat2 or new_train_feat3
 
-### Construct the visual features  
+##Now for the test set: 
+#Import the provide SIFT features of the test set
+dat_test_sift <- read.csv("../data/test/sift_features.csv")
+dat_test_sift <- t(as.matrix(dat_test_sift))
+#Import the set of new visual features (constructed outside of R)
+dat_test_new <- read.csv("../data/test/new_features.csv")  #or other file name
+dat_test_new <- t(as.matrix(dat_test_new))
+
+```
+
+### Construct the new visual features   
 These features are to be used in training and testing of our Baseline and Advanced model. Save the constructed features to the output subfolder.
 
 `feature.R` should be the wrapper for all your feature engineering functions and options. The function `feature( )` should have options that correspond to different scenarios for your project and produces an R object that contains features that are required by all the models you are going to evaluate later. 
@@ -285,7 +303,7 @@ Here we call the ```train()``` function in ```train.R```. We fit the entire set 
 tm_train=NA
 if(run.train){
   load(file="../output/feature_train.RData")
-  tm_train <- system.time(fit_train <- train(dat_train, label_train))
+  tm_train <- system.time(fit_train <- train(dat_train_sift, dat_train_new, label_train))
   save(fit_train, file="../output/fit_train.RData")
 }
 ```
