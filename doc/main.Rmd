@@ -159,44 +159,39 @@ new_train_feat3 <-
 ##NOTE: Uncomment the specified chunks of code to reproduce the parameter-tuning process
 ##      for the xgBoost model on the three new feature set and the gbm on the three new feature sets
 
-if (run.tune.new)
+if (run.tune.new){
   source("../lib/xgboost.R")
   source("../lib/bl.tune.R")
+  
+  
+  ###******* Tune for xgBoost
+  #  1)tune on the first set of new visual features for the training images
+  summary.xgb.new1 <- tune.xgb(new_train_feat1,label_train)
+  #save(summary.xgb.new1,file="../output/summary_best_xgb_new1.Rdata")
+  
+  #  2)tune on the second set of new visual features for the training images
+  summary.xgb.new2 <- tune.xgb(new_train_feat2,label_train)
+  #save(summary.xgb.new2,file="../output/summary_best_xgb_new2.Rdata")
+  
+  #  3)tune on the third set of new visual features for the training images
+  summary.xgb.new3 <- tune.xgb(new_train_feat3,label_train)
+  #save(summary.xgb.new3,file="../output/summary_best_xgb_new3.Rdata")
+  
+  
+  ###******* Tune for gbm 
+  #  1)tune on the first set of new visual features for the training images
+  summary.gbm.new1 <- bl.tune()
+  #save(summary.gbm.new1,file="../output/summary_best_gbm_new1.Rdata")
 
-
-###******* Tune for xgBoost
-#  1)tune on the first set of new visual features for the training images
-#########============Uncomment Code Below============#########
-#summary.xgb.new1 <- tune.xgb(new_train_feat1,label_train)
-#save(summary.xgb.new1,file="../output/summary_best_xgb_new1.Rdata")
-#########============================================#########
-#  2)tune on the second set of new visual features for the training images
-#########============Uncomment Code Below============#########
-summary.xgb.new2 <- tune.xgb(new_train_feat2,label_train)
-save(summary.xgb.new2,file="../output/summary_best_xgb_new2.Rdata")
-#########============================================#########
-#  3)tune on the third set of new visual features for the training images
-#########============Uncomment Code Below============#########
-summary.xgb.new3 <- tune.xgb(new_train_feat3,label_train)
-save(summary.xgb.new3,file="../output/summary_best_xgb_new3.Rdata")
-#########============================================#########
-
-###******* Tune for gbm 
-#  1)tune on the first set of new visual features for the training images
-#########============Uncomment Code Below============#########
-summary.gbm.new1 <- bl.tune()
-save(summary.gbm.new1,file="../output/summary_best_gbm_new1.Rdata")
-#########============================================#########
-#  2)tune on the second set of new visual features for the training images
-#########============Uncomment Code Below============#########
-summary.gbm.new2 <- bl.tune()
-save(summary.gbm.new2,file="../output/summary_best_gbm_new2.Rdata")
-#########============================================#########
-#  3)tune on the third set of new visual features for the training images
-#########============Uncomment Code Below============#########
-summary.gbm.new3 <- bl.tune()
-save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
-#########============================================#########
+  #  2)tune on the second set of new visual features for the training images
+  summary.gbm.new2 <- bl.tune()
+  #save(summary.gbm.new2,file="../output/summary_best_gbm_new2.Rdata")
+  
+  #  3)tune on the third set of new visual features for the training images
+  summary.gbm.new3 <- bl.tune()
+  #save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
+  
+}
 ```
 
 
