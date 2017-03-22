@@ -262,8 +262,6 @@ if(run.feature.test){
 
 
 ### Train a classification model with training images
-Call the train model and test model from library. 
-
 `train.R` and `test.R` should be wrappers for all your model training steps and your classification/prediction steps. 
 + `train.R`
   + Input: an R object that contains processed training set features.
@@ -279,7 +277,8 @@ source("../lib/test.R")
 ```
 
 
-* Train the baseline and advanced models with the entire training set using the selected models ('best' model parameters) via cross-validation.
+### Train Baseline Model and Advanced Model  
+Here we call the ```train()``` function in ```train.R```. We fit the entire set of constructed visual features of the training images to the Baseline Model and the Advanced Model.  
 ```{r final_train}
 #Here, we call train() from train.R
 #   -note that train() returns a list of two model objects: list(baseline_fit,advanced_fit)
@@ -291,8 +290,8 @@ if(run.train){
 }
 ```
 
-### Make prediction 
-Feed the final training model with the completely holdout testing data. 
+### Make predictions  
+Here we call the ```test()``` function in ```test.R```. Feed the Baseline Model and the Advanced Model with the completely holdout testing data.  
 ```{r test}
 tm_test=NA
 if(run.test){
