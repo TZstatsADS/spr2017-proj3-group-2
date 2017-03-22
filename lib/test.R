@@ -27,8 +27,15 @@ test <- function(fit_train, dat_test){
   
   ##########============ADVANCED MODEL============##########
   #fit_train$advanced_fit is a xgb.Booster class object
-  pred_adv <- predict(fit_train$advanced_fit, newdata=dat_test,
-                      ntreelimit = fit_train$adv_best_iter)
+  pred_adv <- predict(fit_train$advanced_fit, newdata=dat_test)
+                      #Note: Since we pass a xgb.Booster model object already fitted
+                      #      with the best nrounds parameter (i.e. best iteration/n.trees
+                      #      for boosting), then we can leave out the
+                      #      ntreelimit = fit_train$adv_best_iter parameter in predict.xgb.Booster().
+                      #      The predictions are the same with & without the ntreelimit parameter.
+                      
+  
+  
 
   ##########============OUTPUT DATA============##########
   # TRUE=1; FALSE=0
