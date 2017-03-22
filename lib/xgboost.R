@@ -90,13 +90,13 @@ tune.xgb <- function(dat_train,label_train){
 
 ##if it's decided that xgboost is best candidate for advanced model
 ##then source this R file and call this function in train.R
-train.xgb <- function(dat_train,label_train,par_list){
+train.xgb <- function(dat_train,label_train,par_list,nrounds){
   #use parameters from tuning with CV on the sift features of training images 
-  #best_params <- list(max_depth=5, eta=.5, nrounds=169)
+  #best_params <- list(max_depth=5, eta=.5) ; nrounds=169 
   label_train <- as.numeric(label_train) #label vals in range [0,1] for logistic reg.
   Dtrain <- xgb.DMatrix(data=dat_train,label=label_train)
   xgb.m <- xgb.train(data=Dtrain, params=par_list, 
-                     nthread = 2, 
+                     nthread = 2, nrounds = nrounds,
                      objective = "binary:logistic")
   return(xgb.m)
 }
