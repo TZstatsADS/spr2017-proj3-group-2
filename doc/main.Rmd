@@ -188,7 +188,12 @@ save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
 ####Summary Table: parameter-tuning process on new features 
 ```{r}
 #load Rdata files
-load("../output/summary_best_models1.Rdata")
+load("../output/summary_best_xgb_new1.Rdata")
+load("../output/summary_best_xgb_new2.Rdata")
+load("../output/summary_best_xgb_new3.Rdata")
+load("../output/summary_best_gbm_new1.Rdata")
+load("../output/summary_best_gbm_new2.Rdata")
+load("../output/summary_best_gbm_new3.Rdata")
 
 data.table(Model = ,
            Features = ,
@@ -203,6 +208,7 @@ data.table(Model = ,
 ###Selecting the *best* Advanced Model  
 ####Summary Table of best models tuned on various feature sets (original & new) 
 ```{r}
+#load Rdata files 
 load("../output/summary_best_models1.Rdata")
 ```
 
