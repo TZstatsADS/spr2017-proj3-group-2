@@ -5,7 +5,7 @@
 ### Train baseline and advanced classification model with training images ###
 #############################################################################
 
-train <- function(dat_train_sift,dat_train_new, label_train, type = NULL){
+train <- function(dat_train_base=NULL,dat_train_adv=NULL, label_train, model = NULL){
   ### Input: 
   ###  -  R object that contains processed training set features 
   ###  -  R object of training sample labels.
@@ -20,11 +20,11 @@ train <- function(dat_train_sift,dat_train_new, label_train, type = NULL){
   source("lib/xgboost.R")
   #source("lib/tune")
   
-  if (is.null(type)) { #Return both Baseline & Advanced models
+  if (is.null(model)) { #Return both Baseline & Advanced models
 
   ##########============BASELINE MODEL============##########
     ### Train with gradient boosting model
-      ##use dat_train_sift
+      ##use dat_train_base
       ##use 'best' parameters from training images
     #base_best_params <-  
     #base_best_n.trees <-
@@ -36,7 +36,7 @@ train <- function(dat_train_sift,dat_train_new, label_train, type = NULL){
 
     adv_best_params <- list(max_depth=5, eta=.5) 
     adv_best_nrounds=169 #e.g. tuned on SIFT features
-    best_fit_adv <- train.xgb(dat_train_new,label_train,par_list=best_params,best_nrounds)
+    best_fit_adv <- train.xgb(dat_train_adv,label_train,par_list=best_params,best_nrounds)
   
   ##########============OUTPUT DATA============##########
   
@@ -47,10 +47,10 @@ train <- function(dat_train_sift,dat_train_new, label_train, type = NULL){
     return(output)
   }
   
-  else if (type == "base"){
+  else if (model == "base"){
     ##########============BASELINE MODEL============##########
     ### Train with gradient boosting model
-    ##use dat_train_sift
+    ##use dat_train_base
     ##use 'best' parameters from training images
     #base_best_params <-  
     #base_best_n.trees <-
@@ -59,12 +59,12 @@ train <- function(dat_train_sift,dat_train_new, label_train, type = NULL){
     return(base.output)
   }
   
-  else if (type == "advanced"){
+  else if (model == "advanced"){
     ##########============ADVANCED MODEL============##########
 
     adv_best_params <- list(max_depth=5, eta=.5) 
     adv_best_nrounds=169 #e.g. tuned on SIFT features
-    best_fit_adv <- train.xgb(dat_train_new,label_train,par_list=best_params,best_nrounds)
+    best_fit_adv <- train.xgb(dat_train_adv,label_train,par_list=best_params,best_nrounds)
     
     adv.output <- list(advanced_fit=best_fit_adv, adv_best_iter=adv_best_nrounds)
     return(adv.output)

@@ -298,12 +298,22 @@ Here we call the ```train()``` function in ```train.R```. We fit the entire set 
 ```{r final_train}
 #Here, we call train() from train.R
 #   -note that train() returns a list of two model objects: list(baseline_fit,advanced_fit)
-tm_train=NA
+tm_train=NA ; tm_train_base=NA ; tm_train_adv=NA
 if(run.train){
   load(file="../output/feature_train.RData")
-  tm_train <- system.time(fit_train <- train(dat_train_sift, dat_train_new, label_train))
+  tm_train <- system.time(fit_train <- train(dat_train_base = dat_train_sift, 
+                                             dat_train_adv = dat_train_new, 
+                                             label_train))
   save(fit_train, file="../output/fit_train.RData")
+  
+  #individual times for training base model and advanced model 
+  tm_train_base <- system.time(fit_train_base <- train(dat_train_base = dat_train_sift,
+                                                       label_train, model="base"))
+  tm_train_adv <- system.time(fit_train_adv <- train(dat_train_adv = dat_train_new,
+                                                     label_train,model="advanced"))
 }
+
+
 ```
 
 ### Make predictions  
@@ -325,5 +335,7 @@ Prediction performance matters, so does the running times for constructing featu
 cat("Time for constructing training features=", tm_feature_train[1], "s \n")
 cat("Time for constructing testing features=", tm_feature_test[1], "s \n")
 cat("Time for training models (Baseline + Advanced)=", tm_train[1], "s \n")
+cat("Time for training Baseline Model=", tm_train_base[1], "s \n")
+cat("Time for training Advanced Model=", tm_train_adv[1], "s \n")
 cat("Time for making predictions (Baseline + Advanced)=", tm_test[1], "s \n")
 ```
