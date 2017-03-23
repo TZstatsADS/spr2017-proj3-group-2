@@ -232,35 +232,27 @@ load("../output/summary_best_xgb_new1.Rdata")
 load("../output/summary_best_xgb_new2.Rdata")
 load("../output/summary_best_xgb_new3.Rdata")
 load("../output/summary_best_gbm_new1.Rdata")
-#load("../output/summary_best_gbm_new2.Rdata")
-#load("../output/summary_best_gbm_new3.Rdata")
-
-#data.table(Model = ,
-#           Features = ,
-#           Best_Param_1 = ,
-#           Best_Param_2 = ,
-#           Best_Param_3 = ,
-#           Best_Error = ,
-#           Training_Time = )
-
+load("../output/summary_best_gbm_new2.Rdata")
+load("../output/summary_best_gbm_new3.Rdata")
 
 summary2 <- rbind(summary.xgb.new1, summary.xgb.new2,
-                 summary.xgb.new3, summary.gbm.new1) 
+                 summary.xgb.new3, summary.gbm.new1,
+                 summary.gbm.new2, summary.gbm.new3) 
 #sort table by Best_Error in ascending order
 summary2 <- summary2[order(summary2$Best_Error)]
 
 #add column for feature set models are tuned on
 (summary2 <- data.table(summary2[,1], Features = c("SIFT- resize+adaptive","SIFT- resize",
-                                                     "SIFT- adaptive", "SIFT- resize+adaptive")#,
-                                                     #"SIFT- resize", "SIFT- adaptive")
-                        ,summary2[,2:6]))
+                                                     "SIFT- adaptive", "SIFT- resize+adaptive",
+                                                     "SIFT- resize", "SIFT- adaptive"),
+                        summary2[,2:6]))
 
 save(summary2,file="../output/summary_best_models2.Rdata")
 ```
-
-
+  
+  
 ###Selecting the *best* Advanced Model  
-####Summary Table of best models tuned on various feature sets (original SIFT & new) 
+####Summary Table of best models tuned on various feature sets (original SIFT & new)  
 ```{r}
 #load Rdata files 
 load("../output/summary_best_models1.Rdata")
