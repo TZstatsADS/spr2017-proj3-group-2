@@ -17,8 +17,8 @@ train <- function(dat_train_base=NULL,dat_train_adv=NULL, label_train, model = "
   ### load libraries
   library("gbm")
   ###source files where functions are located
-  source("lib/xgboost.R")
-  source("lib/blgbm.R")
+  source("../lib/xgboost.R")
+  source("../lib/blgbm.R")
   
   if (model == "both") { #Return both Baseline & Advanced models
 

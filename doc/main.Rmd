@@ -1,10 +1,10 @@
 ---
-title: "Project 3: Main Script"
+title: 'Project 3: Main Script'
 author: "Group 2"
 date: "March 24, 2017"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 This file firstly details the model selection process for an advanced binary classification model, that takes in images and classifies them as either a labradoodle ("1") or fried chicken ("0") - simply referred to as the Advanced Model. Secondly, it runs evaluation experiments to compare the Baseline Model - gradient boosting model (gbm) with parameters tuned on the original SIFT features - with our Advanced Model.
@@ -18,8 +18,9 @@ if(!require("EBImage")){
 
 
 needed <- setdiff(c("gbm", "data.table", "e1071", "class", "adabag"),rownames(installed.packages()))
-install.packages(needed)
-
+if (length(needed) > 0 ){
+  install.packages(needed)
+}
 library(EBImage)
 library(gbm)
 library(data.table)
@@ -126,7 +127,6 @@ load("../output/summary_best_xgb.RData")
 load("../output/summary_best_svm_lin.Rdata")
 load("../output/summary_best_svm_rad.Rdata")
 load("../output/summary_best_knn.Rdata")
-load("../output/summary_best_blgbm.RData") #BL model
 
 #here we have two separate tables for the AdaBag algorithm
 #   -tuning with cross validation chooses the second one (mfinal=100) 
@@ -146,23 +146,15 @@ summary1 <- rbind(summary.xgb, summary.svm.lin,
                  summary.svm.rad, summary.AdaBag,
                  summary.AdaBag2, summary.AdaBoost.M1,
                  summary.AdaBoost_SAMME,
-                 summary.knn) 
-
-#create seperate table for baseline model
-summary2<- summary.bl
+                 summary.knn,summary.bl) 
 
 #sort table by Best_Error in ascending order
 summary1 <- summary1[order(summary1$Best_Error)]
 
 #add column for feature set models are tuned on
-
-(summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",8), summary1[,2:6]))
-summary2<- data.table(summary2[,1], Features= "Original SIFT", summary2[,2:6]) 
-
 (summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",9), summary1[,2:6]))
 
 save(summary1,file="../output/summary_best_models1.Rdata")
-save(summary2, file="../output/summary_best_baseline_original.RData")
 
 ```
 
@@ -339,7 +331,7 @@ if(run.train){
   tm_train <- system.time(fit_train <- train(dat_train_base = dat_train_sift, 
                                              dat_train_adv = dat_train_new, 
                                              label_train))
-  save(fit_train, file="../output/fit_train.RData")
+  save(fit_train, file="../output/fit_train.Rdata")
   
   #individual times for training base model and advanced model 
   tm_train_base <- system.time(fit_train_base <- train(dat_train_base = dat_train_sift,
@@ -358,7 +350,7 @@ tm_test=NA
 if(run.test){
   load(file="../output/dat_test_sift.Rdata")
   load(file="../output/dat_test_new.Rdata")
-  load(file="../output/fit_train.RData")
+  load(file="../output/fit_train.Rdata")
   tm_test <- system.time(pred_test <- test(fit_train, dat_test))
   save(pred_test, file="../output/pred_test.RData")
   
