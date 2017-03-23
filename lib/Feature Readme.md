@@ -2,7 +2,7 @@
 
 ### Code lib Folder - image pre-processing and feature selection
 
-1. Make sure folders data/output and data/output2 are empty.
+1. Create empty folders data/images, data/output and data/output2.
 
 2. Pre-process images using one of the three methods of feature.R.
 
