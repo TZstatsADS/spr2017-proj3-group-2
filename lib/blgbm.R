@@ -42,13 +42,13 @@ tune.bl<- function(dat_train, label_train) {
                            Best_Error = best_err,
                            Training_Time = paste(run.time, "s"))
   
-  save(summary.bl, file="output/summary_best_blgbm.RData")
+  #save(summary.bl, file="output/summary_best_blgbm.RData")
   #return(list(sum=summary.bl, output=trainGBM, model=baseline_train)) 
   return(summary.bl)
   
 } 
 
-tune.bl(train_sift,train_labels)
+#tune.bl(train_sift,train_labels)
 
 
 ###
