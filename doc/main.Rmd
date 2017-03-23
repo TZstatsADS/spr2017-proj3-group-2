@@ -124,6 +124,8 @@ load("../output/summary_best_AdaBag2.Rdata") #mfinal=100; lower cv error, but la
 load("../output/summary_best_AdaBoost.M1.Rdata")
 load("../output/summary_best_AdaBoost_SAMME.Rdata")
 
+load("../output/summary_best_blgbm.Rdata")
+
 #6 columns: "Model", "Best_Param_1", "Best_Param_2", "Best_Param_3", 
 #            "Best_Error", "Training_Time"
 #  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
@@ -131,12 +133,12 @@ summary1 <- rbind(summary.xgb, summary.svm.lin,
                  summary.svm.rad, summary.AdaBag,
                  summary.AdaBag2, summary.AdaBoost.M1,
                  summary.AdaBoost_SAMME,
-                 summary.knn) 
+                 summary.knn, summary.bl) 
 #sort table by Best_Error in ascending order
-summary1 <- summary1[order(summary$Best_Error)]
+summary1 <- summary1[order(summary1$Best_Error)]
 
 #add column for feature set models are tuned on
-(summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",8), summary1[,2:6]))
+(summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",9), summary1[,2:6]))
 
 save(summary1,file="../output/summary_best_models1.Rdata")
 
