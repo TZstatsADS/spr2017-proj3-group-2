@@ -7,12 +7,14 @@
 
 train <- function(dat_train_base=NULL,dat_train_adv=NULL, label_train, model = "both"){
   ### Input: 
-  ###  -  R object that contains processed training set features 
+  ###  -  R object that contains SIFT features of training images
+  ###  -  R object that contains new features (SIFT-resize+adaptive) of training images
   ###  -  R object of training sample labels.
-  ###  -  type = string; either "baseline" or "advanced"
+  ###  -  type = string; "both", baseline" or "advanced"
   ### Output: 
-  ###      RData file that contains trained classifiers 
-  ###      in the forms of R objects
+  ###      list that contains trained classifiers in the form of R model objects
+  ###      and the additional parameter for predict function specific to the object class
+  ###         --> in this case, the additional parameter to pass to predict() is best_iter
   
   ### load libraries
   library("gbm")

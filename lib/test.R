@@ -11,9 +11,12 @@ test <- function(fit_train, dat_test_base=NULL, dat_test_adv=NULL, model="both")
   ### Fit the classfication model with testing data
   
   ### Input: 
-  ###  - the fitted classification model using training data
-  ###  -  processed features from testing images 
-  ### Output: training model specification
+  ###  - list of fitted classification model(s) and prediction parameter(s) using training data
+  ###  - processed features from testing images 
+  ###  -  R object that contains SIFT features of testing images
+  ###  -  R object that contains new features (SIFT-resize+adaptive) of testing images
+  ### Output: a vector of predictions for single specified model; 
+  ###         or a list of two prediction vectors ($baseline_pred and $advanced_pred)
   
   ### load libraries
   library(gbm)
