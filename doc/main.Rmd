@@ -1,6 +1,6 @@
 ---
 title: 'Project 3: Main Script'
-author: "Group 2"
+author: "Ka Heng (Helen) Lo"
 date: "March 24, 2017"
 output:
   html_document: default
