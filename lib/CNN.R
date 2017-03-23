@@ -99,5 +99,6 @@ predicted_labels <- max.col(t(predicted)) - 1
 errorrate <- sum(diag(table(test[, 1], predicted_labels)))/200
 end.time <- Sys.time()
 runtime <- end.time-start.time
+saveRDS(model,"CNN.rds")
 return(cat("the test error is:",errorrate,'\n',"the running time is:",runtime,"s"))
 }
