@@ -252,7 +252,9 @@ save(summary2,file="../output/summary_best_models2.Rdata")
 load("../output/summary_best_models1.Rdata")
 load("../output/summary_best_models2.Rdata")
 
-summary3 <- rbind(summary1,summary2)
+load("../output/summary_best_cnn.Rdata")
+
+summary3 <- rbind(summary1,summary2,summary.cnn)
 (summary3 <- summary3[order(summary3$Best_Error)])
 
 save(summary3,file="../output/summary_best_models3.Rdata")
