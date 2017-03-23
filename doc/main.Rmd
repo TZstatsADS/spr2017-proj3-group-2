@@ -150,8 +150,11 @@ save(summary1,file="../output/summary_best_models1.Rdata")
 new_train_feat1 <- read.csv("../data/train/sift_features_resize+adaptive.csv")
 new_train_feat1 <- t(as.matrix(new_train_feat1))
 
-new_train_feat2 <- 
-new_train_feat3 <- 
+new_train_feat2 <- read.csv("../data/train/sift_features_resize.csv")
+new_train_feat2 <- t(as.matrix(new_train_feat2))
+
+new_train_feat3 <- read.csv("../data/train/sift_features_adaptive.csv")
+new_train_feat3 <- t(as.matrix(new_train_feat3))
 ```
 
 #### Tune parameters of each model via cross-validation  
@@ -256,7 +259,7 @@ We construct the new visual features outside of R/Rstudio, so we just import the
 dat_train_sift <- train_sift
 dat_train_new <- new_train_feat1  #or new_train_feat2 or new_train_feat3
 if (run.feature.train){
-  dat_train_sift <- read.csv("../data/train/sift_features_train.csv")
+  dat_train_sift <- read.csv("../data/train/sift_features.csv")
   dat_train_sift <- t(as.matrix(dat_train_sift))
   
   dat_train_new <- read.csv("../data/train/new_features_train.csv")
