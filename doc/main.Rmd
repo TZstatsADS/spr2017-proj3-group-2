@@ -75,20 +75,20 @@ run.tune.sift = FALSE
 #  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
 ############################################################################################
 
-<<<<<<< HEAD
+
 #source("../lib/xgboost.R")
 #source("../lib/svm.R")
 #source("../lib/knn.R")
 #source("../lib/AdaBag_AdaBoost.R")
 #source("../lib/blgbm.R")
-=======
+
 if(run.tune.sift) {
   source("../lib/xgboost.R")
   source("../lib/svm.R")
   source("../lib/knn.R")
   source("../lib/AdaBag_AdaBoost.R")
->>>>>>> origin/master
-
+  source("../lib/blgbm.R")
+  
   summary.xgb <- tune.xgb(train_sift,label_train)
   #save(summary.xgb, file="output/summary_best_xgb.RData")
 
@@ -109,10 +109,11 @@ if(run.tune.sift) {
 
   summary.AdaBoost_SAMME <- tune.AdaBoost_SAMME(train_sift,label_train)
   #save(summary.AdaBoost_SAMME,file="output/summary_best_AdaBoost_SAMME.Rdata")
+  
+  summary.bl<- tune.bl(train_sift, label_train)
+  #save(summary.bl,file="output/summary_best_blgbm.RData")
 }
 
-#summary.bl<- tune.bl(train_sift, label_train)
-##save(summary.bl,file="output/summary_best_blgbm.RData")
 
 ```
 
@@ -145,26 +146,21 @@ summary1 <- rbind(summary.xgb, summary.svm.lin,
                  summary.svm.rad, summary.AdaBag,
                  summary.AdaBag2, summary.AdaBoost.M1,
                  summary.AdaBoost_SAMME,
-<<<<<<< HEAD
                  summary.knn) 
 
 #create seperate table for baseline model
 summary2<- summary.bl
 
-=======
-                 summary.knn, summary.bl) 
->>>>>>> origin/master
 #sort table by Best_Error in ascending order
 summary1 <- summary1[order(summary1$Best_Error)]
 
 #add column for feature set models are tuned on
-<<<<<<< HEAD
+
 (summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",8), summary1[,2:6]))
 summary2<- data.table(summary2[,1], Features= "Original SIFT", summary2[,2:6]) 
-=======
+
 (summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",9), summary1[,2:6]))
 
->>>>>>> origin/master
 save(summary1,file="../output/summary_best_models1.Rdata")
 save(summary2, file="../output/summary_best_baseline_original.RData")
 
@@ -196,7 +192,7 @@ run.tune.sift = FALSE
 ```{r}
 ##NOTE: Uncomment the specified chunks of code to reproduce the parameter-tuning process
 ##      for the xgBoost model on the three new feature set and the gbm on the three new feature sets
-<<<<<<< HEAD
+
 #########============Uncomment Code Below============#########
 #source("../lib/xgboost.R")
 #source("../lib/blgbm.R")
@@ -221,26 +217,26 @@ save(summary.xgb.new3,file="../output/summary_best_xgb_new3.Rdata")
 
 ###******* Tune for gbm 
 #set.seed(15)
-#  1)tune on the first set of new visual features for the training images
+#  1)tune on the first set of new visual features (adaptive+ resize) for the training images
 #########============Uncomment Code Below============#########
 summary.gbm.new1 <- tune.bl(new_train_feat1, label_train)
 save(summary.gbm.new1,file="../output/summary_best_gbm_new1.Rdata")
 #########============================================#########
-#  2)tune on the second set of new visual features for the training images
+#  2)tune on the second set of new visual features (resize) for the training images
 #########============Uncomment Code Below============#########
-summary.gbm.new2 <- bl.tune()
+summary.gbm.new2 <- tune.bl(new_train_feat2, label_train)
 save(summary.gbm.new2,file="../output/summary_best_gbm_new2.Rdata")
 #########============================================#########
-#  3)tune on the third set of new visual features for the training images
+#  3)tune on the third set of new visual features (adaptive) for the training images
 #########============Uncomment Code Below============#########
-summary.gbm.new3 <- bl.tune()
+summary.gbm.new3 <- tune.bl(new_train_feat3, label_train)
 save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
 #########============================================#########
-=======
+#=======
 
 if (run.tune.new){
   source("../lib/xgboost.R")
-  source("../lib/bl.tune.R")
+  source("../lib/blgbm.R")
   
   
   ###******* Tune for xgBoost
@@ -259,19 +255,18 @@ if (run.tune.new){
   
   ###******* Tune for gbm 
   #  1)tune on the first set of new visual features for the training images
-  summary.gbm.new1 <- bl.tune()
-  #save(summary.gbm.new1,file="../output/summary_best_gbm_new1.Rdata")
+ summary.gbm.new1 <- tune.bl(new_train_feat1, label_train)
+#save(summary.gbm.new1,file="../output/summary_best_gbm_new1.Rdata")
 
   #  2)tune on the second set of new visual features for the training images
-  summary.gbm.new2 <- bl.tune()
-  #save(summary.gbm.new2,file="../output/summary_best_gbm_new2.Rdata")
+  summary.gbm.new2 <- tune.bl(new_train_feat2, label_train)
+#save(summary.gbm.new2,file="../output/summary_best_gbm_new2.Rdata")
   
   #  3)tune on the third set of new visual features for the training images
-  summary.gbm.new3 <- bl.tune()
-  #save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
+ summary.gbm.new3 <- tune.bl(new_train_feat3, label_train)
+#save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
   
 }
->>>>>>> origin/master
 ```
 
 
