@@ -1,10 +1,25 @@
+### Author: Ka Heng (Helen) Lo
+### Project 3
+### ADS Spring 2017
+#############================  Description  ================#############
+##This file contains six functions:
+#   1) Function to tune parameters of adabag model with input set of features 
+#      of training images
+#   2) Function to train data to fit adabag model given the 'best' params from 
+#      tuning via cross-validation 
+#   3) Function to tune parameters of adaboost.M1 model with input set of 
+#      features of training images
+#   4) Function to train data to fit adaboost.M1 model given the 'best' params 
+#      from tuning via cross-validation 
+#   5) Function to tune parameters of adaboost_SAMME model with input set of 
+#      features of training images
+#   6) Function to train data to fit adaboost_SAMME model given the 'best' 
+#      params from tuning via cross-validation 
+#########################################################################
+
+
 require(adabag) #multiclass AdaBoost.M1, SAMME and Bagging algorithms 
 require(data.table)
-
-train_sift <- read.csv("data/train/sift_features.csv")
-train_sift <- t(as.matrix(train_sift))
-train_labels <- read.csv("data/train/labels.csv")
-train_labels <- as.factor(as.matrix(train_labels)[,1])
 
 ##############################################################################
 

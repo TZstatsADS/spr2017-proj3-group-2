@@ -16,13 +16,16 @@ if(!require("EBImage")){
   biocLite("EBImage")
 }
 
-if(!require("gbm")){
-  install.packages("gbm")
-}
+
+needed <- setdiff(c("gbm", "data.table", "e1071", "class", "adabag"),rownames(installed.packages()))
+install.packages(needed)
 
 library(EBImage)
 library(gbm)
 library(data.table)
+library(e1071)
+library(class)
+library(adabag)
 ```
 
 ### Specify directories.
@@ -41,8 +44,10 @@ We code labradoodles as "1" and fried chicken as "0" for binary classification.
 
 ```{r training_images}
 label_train <- read.csv("../data/train/labels.csv")
-label_train <- as.matrix(label_train)[,1]
-
+label_train <- as.matrix(label_train)[,1]  
+#some of our models require labels to be numeric in [0,1], so we keep the labels as 0's and 1's
+#for any model that requires labels to be factors we pass the labels to the tune or train function
+#specific to the model as numeric values and coerce them inside the function to be factors
 ```
 
 ##Selecting the Advanced Model: 
@@ -55,40 +60,56 @@ train_sift <- t(as.matrix(train_sift))
 ```
 
 #### Tune parameters of each model via cross-validation  
+Set up control for tuning models under consideration based on the provided SIFT features of the training images.  
++ (T/F) tune models under consideration based on provided SIFT features  
+```{r}
+###### T/F to reproduce the tuning process for all models considered ######
+run.tune.sift = FALSE
+```
+
+* Parameter-tuning process:  
 ```{r}
 #get summary tables of best tuned parameters for each model considered, i.e. lowest cv error
 #6 columns: "Model", "Best_Param_1", "Best_Param_2", "Best_Param_3", 
 #            "Best_Error", "Training_Time"
 #  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
 ############################################################################################
-###### Uncomment below code to reproduce the tuning process for all models considered ######
 
+<<<<<<< HEAD
 #source("../lib/xgboost.R")
 #source("../lib/svm.R")
 #source("../lib/knn.R")
 #source("../lib/AdaBag_AdaBoost.R")
 #source("../lib/blgbm.R")
+=======
+if(run.tune.sift) {
+  source("../lib/xgboost.R")
+  source("../lib/svm.R")
+  source("../lib/knn.R")
+  source("../lib/AdaBag_AdaBoost.R")
+>>>>>>> origin/master
 
-#summary.xgb <- tune.xgb(train_sift,label_train)
-#save(summary.xgb, file="output/summary_best_xgb.RData")
+  summary.xgb <- tune.xgb(train_sift,label_train)
+  #save(summary.xgb, file="output/summary_best_xgb.RData")
 
-#summary.svm.lin <- tune.svm.lin(train_sift,label_train)
-#save(summary.svm.lin, file="output/summary_best_svm_lin.Rdata")
+  summary.svm.lin <- tune.svm.lin(train_sift,label_train)
+  #save(summary.svm.lin, file="output/summary_best_svm_lin.Rdata")
 
-#summary.svm.rad <- tune.svm.rad(train_sift,label_train)
-#save(summary.svm.rad,file="output/summary_best_svm_rad.Rdata")
+  summary.svm.rad <- tune.svm.rad(train_sift,label_train)
+  #save(summary.svm.rad,file="output/summary_best_svm_rad.Rdata")
 
-#summary.knn <- tune.knn(train_sift,label_train)
-#save(summary.knn, file="output/summary_best_knn.Rdata")
+  summary.knn <- tune.knn(train_sift,label_train)
+  #save(summary.knn, file="output/summary_best_knn.Rdata")
 
-#summary.AdaBag <- tune.AdaBag(train_sift,label_train)
-#save(summary.AdaBag,file="output/summary_best_AdaBag2.Rdata")
+  summary.AdaBag <- tune.AdaBag(train_sift,label_train)
+  #save(summary.AdaBag,file="output/summary_best_AdaBag2.Rdata")
 
-#summary.AdaBoost.M1 <- tune.AdaBoost.M1(train_sift,label_train)
-#save(summary.AdaBoost.M1,file="output/summary_best_AdaBoost.M1.Rdata")
+  summary.AdaBoost.M1 <- tune.AdaBoost.M1(train_sift,label_train)
+  #save(summary.AdaBoost.M1,file="output/summary_best_AdaBoost.M1.Rdata")
 
-#summary.AdaBoost_SAMME <- tune.AdaBoost_SAMME(train_sift,label_train)
-#save(summary.AdaBoost_SAMME,file="output/summary_best_AdaBoost_SAMME.Rdata")
+  summary.AdaBoost_SAMME <- tune.AdaBoost_SAMME(train_sift,label_train)
+  #save(summary.AdaBoost_SAMME,file="output/summary_best_AdaBoost_SAMME.Rdata")
+}
 
 #summary.bl<- tune.bl(train_sift, label_train)
 ##save(summary.bl,file="output/summary_best_blgbm.RData")
@@ -115,6 +136,8 @@ load("../output/summary_best_AdaBag2.Rdata") #mfinal=100; lower cv error, but la
 load("../output/summary_best_AdaBoost.M1.Rdata")
 load("../output/summary_best_AdaBoost_SAMME.Rdata")
 
+load("../output/summary_best_blgbm.Rdata")
+
 #6 columns: "Model", "Best_Param_1", "Best_Param_2", "Best_Param_3", 
 #            "Best_Error", "Training_Time"
 #  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
@@ -122,17 +145,26 @@ summary1 <- rbind(summary.xgb, summary.svm.lin,
                  summary.svm.rad, summary.AdaBag,
                  summary.AdaBag2, summary.AdaBoost.M1,
                  summary.AdaBoost_SAMME,
+<<<<<<< HEAD
                  summary.knn) 
 
 #create seperate table for baseline model
 summary2<- summary.bl
 
+=======
+                 summary.knn, summary.bl) 
+>>>>>>> origin/master
 #sort table by Best_Error in ascending order
-summary1 <- summary1[order(summary$Best_Error)]
+summary1 <- summary1[order(summary1$Best_Error)]
 
 #add column for feature set models are tuned on
+<<<<<<< HEAD
 (summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",8), summary1[,2:6]))
 summary2<- data.table(summary2[,1], Features= "Original SIFT", summary2[,2:6]) 
+=======
+(summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",9), summary1[,2:6]))
+
+>>>>>>> origin/master
 save(summary1,file="../output/summary_best_models1.Rdata")
 save(summary2, file="../output/summary_best_baseline_original.RData")
 
@@ -146,14 +178,25 @@ save(summary2, file="../output/summary_best_baseline_original.RData")
 new_train_feat1 <- read.csv("../data/train/sift_features_resize+adaptive.csv")
 new_train_feat1 <- t(as.matrix(new_train_feat1))
 
-new_train_feat2 <- 
-new_train_feat3 <- 
+new_train_feat2 <- read.csv("../data/train/sift_features_resize.csv")
+new_train_feat2 <- t(as.matrix(new_train_feat2))
+
+new_train_feat3 <- read.csv("../data/train/sift_features_adaptive.csv")
+new_train_feat3 <- t(as.matrix(new_train_feat3))
 ```
 
-#### Tune parameters of each model via cross-validation 
+#### Tune parameters of each model via cross-validation  
+* Set up control for tuning models under consideration based on the provided SIFT features of the training images.  
++ (T/F) tune models under consideration based on three new sets of visual features  
+```{r}
+###### T/F to reproduce the tuning process for all models considered ######
+run.tune.sift = FALSE
+```
+* Parameter-tuning process:  
 ```{r}
 ##NOTE: Uncomment the specified chunks of code to reproduce the parameter-tuning process
 ##      for the xgBoost model on the three new feature set and the gbm on the three new feature sets
+<<<<<<< HEAD
 #########============Uncomment Code Below============#########
 #source("../lib/xgboost.R")
 #source("../lib/blgbm.R")
@@ -193,28 +236,74 @@ save(summary.gbm.new2,file="../output/summary_best_gbm_new2.Rdata")
 summary.gbm.new3 <- bl.tune()
 save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
 #########============================================#########
+=======
+
+if (run.tune.new){
+  source("../lib/xgboost.R")
+  source("../lib/bl.tune.R")
+  
+  
+  ###******* Tune for xgBoost
+  #  1)tune on the first set of new visual features for the training images
+  summary.xgb.new1 <- tune.xgb(new_train_feat1,label_train)
+  #save(summary.xgb.new1,file="../output/summary_best_xgb_new1.Rdata")
+  
+  #  2)tune on the second set of new visual features for the training images
+  summary.xgb.new2 <- tune.xgb(new_train_feat2,label_train)
+  #save(summary.xgb.new2,file="../output/summary_best_xgb_new2.Rdata")
+  
+  #  3)tune on the third set of new visual features for the training images
+  summary.xgb.new3 <- tune.xgb(new_train_feat3,label_train)
+  #save(summary.xgb.new3,file="../output/summary_best_xgb_new3.Rdata")
+  
+  
+  ###******* Tune for gbm 
+  #  1)tune on the first set of new visual features for the training images
+  summary.gbm.new1 <- bl.tune()
+  #save(summary.gbm.new1,file="../output/summary_best_gbm_new1.Rdata")
+
+  #  2)tune on the second set of new visual features for the training images
+  summary.gbm.new2 <- bl.tune()
+  #save(summary.gbm.new2,file="../output/summary_best_gbm_new2.Rdata")
+  
+  #  3)tune on the third set of new visual features for the training images
+  summary.gbm.new3 <- bl.tune()
+  #save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
+  
+}
+>>>>>>> origin/master
 ```
 
 
 ####Summary Table: parameter-tuning process on new features 
 ```{r}
 #load Rdata files
-load("../output/summary_best_models1.Rdata")
+load("../output/summary_best_xgb_new1.Rdata")
+load("../output/summary_best_xgb_new2.Rdata")
+load("../output/summary_best_xgb_new3.Rdata")
+load("../output/summary_best_gbm_new1.Rdata")
+load("../output/summary_best_gbm_new2.Rdata")
+load("../output/summary_best_gbm_new3.Rdata")
 
-data.table(Model = ,
-           Features = ,
-           Best_Param_1 = ,
-           Best_Param_2 = ,
-           Best_Param_3 = ,
-           Best_CV_Error = ,
-           Training_Time = )
+#data.table(Model = ,
+#           Features = ,
+#           Best_Param_1 = ,
+#           Best_Param_2 = ,
+#           Best_Param_3 = ,
+#           Best_CV_Error = ,
+#           Training_Time = )
+
+#summary2 <- 
+#save(summary2,file="../output/summary_best_models2.Rdata")
 ```
 
 
 ###Selecting the *best* Advanced Model  
-####Summary Table of best models tuned on various feature sets (original & new) 
+####Summary Table of best models tuned on various feature sets (original SIFT & new) 
 ```{r}
+#load Rdata files 
 load("../output/summary_best_models1.Rdata")
+load("../output/summary_best_models2.Rdata")
 ```
 
 
@@ -233,39 +322,35 @@ run.test=FALSE # run evaluation on an independent test set
 run.feature.test=FALSE # process features for test set
 ```
 
-
-### Construct the visual features  
-These features are to be used in training and testing of our Baseline and Advanced model. Save the constructed features to the output subfolder.
-
-`feature.R` should be the wrapper for all your feature engineering functions and options. The function `feature( )` should have options that correspond to different scenarios for your project and produces an R object that contains features that are required by all the models you are going to evaluate later. 
-
-```{r feature}
-source("../lib/feature.R")
-
-tm_feature_train <- NA
-if(run.feature.train){
-  tm_feature_train <- system.time(dat_train <- feature(img_train_dir, 
-                                                       "train", 
-                                                       data_name="zip", 
-                                                       export=TRUE))
+### Import given SIFT features new visual features of the test set  
+We construct the new visual features outside of R/Rstudio, so we just import the .csv files with the new feature data.
+```{r}
+#Recall for the training set we imported the .csv files before. So we have:
+dat_train_sift <- train_sift
+dat_train_new <- new_train_feat1  #or new_train_feat2 or new_train_feat3
+if (run.feature.train){
+  dat_train_sift <- read.csv("../data/train/sift_features.csv")
+  dat_train_sift <- t(as.matrix(dat_train_sift))
+  
+  dat_train_new <- read.csv("../data/train/new_features_train.csv")
+  dat_train_new <- t(as.matrix(dat_train_new))
 }
 
-tm_feature_test <- NA
-if(run.feature.test){
-  tm_feature_test <- system.time(dat_test <- feature(img_test_dir, 
-                                                     "test", 
-                                                     data_name="zip", 
-                                                     export=TRUE))
+##Now for the test set: 
+if (run.feature.test){
+  #Import the provide SIFT features of the test set
+  dat_test_sift <- read.csv("../data/test/sift_features_test.csv")
+  dat_test_sift <- t(as.matrix(dat_test_sift))
+  #Import the set of new visual features (constructed outside of R)
+  dat_test_new <- read.csv("../data/test/new_features_test.csv")  #or other file name
+  dat_test_new <- t(as.matrix(dat_test_new))
 }
 
-#save(dat_train, file="./output/feature_train.RData")
-#save(dat_test, file="./output/feature_test.RData")
+#tm_feature_train = NA
+#tm_feature_test = NA
 ```
 
-
 ### Train a classification model with training images
-Call the train model and test model from library. 
-
 `train.R` and `test.R` should be wrappers for all your model training steps and your classification/prediction steps. 
 + `train.R`
   + Input: an R object that contains processed training set features.
@@ -281,20 +366,31 @@ source("../lib/test.R")
 ```
 
 
-* Train the baseline and advanced models with the entire training set using the selected models ('best' model parameters) via cross-validation.
+### Train Baseline Model and Advanced Model  
+Here we call the ```train()``` function in ```train.R```. We fit the entire set of constructed visual features of the training images to the Baseline Model and the Advanced Model.  
 ```{r final_train}
 #Here, we call train() from train.R
 #   -note that train() returns a list of two model objects: list(baseline_fit,advanced_fit)
-tm_train=NA
+tm_train=NA ; tm_train_base=NA ; tm_train_adv=NA
 if(run.train){
   load(file="../output/feature_train.RData")
-  tm_train <- system.time(fit_train <- train(dat_train, label_train))
+  tm_train <- system.time(fit_train <- train(dat_train_base = dat_train_sift, 
+                                             dat_train_adv = dat_train_new, 
+                                             label_train))
   save(fit_train, file="../output/fit_train.RData")
+  
+  #individual times for training base model and advanced model 
+  tm_train_base <- system.time(fit_train_base <- train(dat_train_base = dat_train_sift,
+                                                       label_train, model="base"))
+  tm_train_adv <- system.time(fit_train_adv <- train(dat_train_adv = dat_train_new,
+                                                     label_train,model="advanced"))
 }
+
+
 ```
 
-### Make prediction 
-Feed the final training model with the completely holdout testing data. 
+### Make predictions  
+Here we call the ```test()``` function in ```test.R```. Feed the Baseline Model and the Advanced Model with the completely holdout testing data.  
 ```{r test}
 tm_test=NA
 if(run.test){
@@ -311,6 +407,8 @@ Prediction performance matters, so does the running times for constructing featu
 ```{r running_time}
 cat("Time for constructing training features=", tm_feature_train[1], "s \n")
 cat("Time for constructing testing features=", tm_feature_test[1], "s \n")
-cat("Time for training model=", tm_train[1], "s \n")
-cat("Time for making prediction=", tm_test[1], "s \n")
+cat("Time for training models (Baseline + Advanced)=", tm_train[1], "s \n")
+cat("Time for training Baseline Model=", tm_train_base[1], "s \n")
+cat("Time for training Advanced Model=", tm_train_adv[1], "s \n")
+cat("Time for making predictions (Baseline + Advanced)=", tm_test[1], "s \n")
 ```

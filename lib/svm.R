@@ -1,14 +1,21 @@
-#svm classifiers with given SIFT features
+### Author: Ka Heng (Helen) Lo
+### Project 3
+### ADS Spring 2017
+#############================  Description  ================#############
+##This file contains four functions:
+#   1) Function to tune parameters of svm model with linear kernel with 
+#      input set of features of training images
+#   2) Function to train data to fit svm model with linear kernel given the 
+#      'best' params from tuning via cross-validation 
+#   3) Function to tune parameters of svm model with RBF kernel with 
+#      input set of features of training images
+#   4) Function to train data to fit svm model with RBF kernel given the 
+#      'best' params from tuning via cross-validation 
+#########################################################################
 
 require(e1071)
 require(data.table)
 
-train_sift <- read.csv("data/train/sift_features.csv")
-train_sift <- t(as.matrix(train_sift))
-train_labels <- read.csv("data/train/labels.csv")
-train_labels <- as.factor(as.matrix(train_labels)[,1])
-
-###########################################################################################
 
 #Call this function to reproduce process of tuning params for svm model with linear kernel
 # -- Returns a summary data.table object that details best parameters used 
@@ -39,7 +46,7 @@ tune.svm.lin <- function(dat_train,label_train){
   #save(summary.svm.lin, file="output/summary_best_svm_lin.Rdata")
   return(summary.svm.lin)
 }
-#tune.svm.lin()
+
 
 
 ##if it's decided that svm with linear kernel is best candidate for advanced model
