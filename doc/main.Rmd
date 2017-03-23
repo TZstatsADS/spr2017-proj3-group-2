@@ -192,15 +192,15 @@ if (run.tune.new){
   
   ###******* Tune for gbm 
   #  1)tune on the first set of new visual features for the training images
-  summary.gbm.new1 <- bl.tune()
+  summary.gbm.new1 <- bl.tune(new_train_feat1,label_train)
   #save(summary.gbm.new1,file="../output/summary_best_gbm_new1.Rdata")
 
   #  2)tune on the second set of new visual features for the training images
-  summary.gbm.new2 <- bl.tune()
+  summary.gbm.new2 <- bl.tune(new_train_feat2,label_train)
   #save(summary.gbm.new2,file="../output/summary_best_gbm_new2.Rdata")
   
   #  3)tune on the third set of new visual features for the training images
-  summary.gbm.new3 <- bl.tune()
+  summary.gbm.new3 <- bl.tune(new_train_feat3,label_train)
   #save(summary.gbm.new3,file="../output/summary_best_gbm_new3.Rdata")
   
 }
@@ -214,19 +214,30 @@ load("../output/summary_best_xgb_new1.Rdata")
 load("../output/summary_best_xgb_new2.Rdata")
 load("../output/summary_best_xgb_new3.Rdata")
 load("../output/summary_best_gbm_new1.Rdata")
-load("../output/summary_best_gbm_new2.Rdata")
-load("../output/summary_best_gbm_new3.Rdata")
+#load("../output/summary_best_gbm_new2.Rdata")
+#load("../output/summary_best_gbm_new3.Rdata")
 
 #data.table(Model = ,
 #           Features = ,
 #           Best_Param_1 = ,
 #           Best_Param_2 = ,
 #           Best_Param_3 = ,
-#           Best_CV_Error = ,
+#           Best_Error = ,
 #           Training_Time = )
 
-#summary2 <- 
-#save(summary2,file="../output/summary_best_models2.Rdata")
+
+summary2 <- rbind(summary.xgb.new1, summary.xgb.new2,
+                 summary.xgb.new3, summary.gbm.new1) 
+#sort table by Best_Error in ascending order
+summary2 <- summary2[order(summary2$Best_Error)]
+
+#add column for feature set models are tuned on
+(summary2 <- data.table(summary2[,1], Features = c("SIFT- resize+adaptive","SIFT- resize",
+                                                     "SIFT- adaptive", "SIFT- resize+adaptive")#,
+                                                     #"SIFT- resize", "SIFT- adaptive")
+                        ,summary2[,2:6]))
+
+save(summary2,file="../output/summary_best_models2.Rdata")
 ```
 
 
@@ -236,6 +247,11 @@ load("../output/summary_best_gbm_new3.Rdata")
 #load Rdata files 
 load("../output/summary_best_models1.Rdata")
 load("../output/summary_best_models2.Rdata")
+
+summary3 <- rbind(summary1,summary2)
+(summary3 <- summary3[order(summary3$Best_Error)])
+
+save(summary3,file="../output/summary_best_models3.Rdata")
 ```
 
 
