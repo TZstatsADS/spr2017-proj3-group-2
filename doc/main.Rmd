@@ -17,7 +17,8 @@ if(!require("EBImage")){
 }
 
 
-needed <- setdiff(c("gbm", "data.table", "e1071", "class", "adabag"),rownames(installed.packages()))
+needed <- setdiff(c("gbm", "data.table", "e1071", "class", "adabag","caret"),
+                  rownames(installed.packages()))
 if (length(needed) > 0 ){
   install.packages(needed)
 }
@@ -27,6 +28,7 @@ library(data.table)
 library(e1071)
 library(class)
 library(adabag)
+library(caret)
 ```
 
 ### Specify directories.
@@ -330,14 +332,14 @@ if(run.train){
   load(file="../output/dat_train_new.Rdata")
   tm_train <- system.time(fit_train <- train(dat_train_base = dat_train_sift, 
                                              dat_train_adv = dat_train_new, 
-                                             label_train))
+                                             label_train=label_train))
   save(fit_train, file="../output/fit_train.Rdata")
   
   #individual times for training base model and advanced model 
   tm_train_base <- system.time(fit_train_base <- train(dat_train_base = dat_train_sift,
-                                                       label_train, model="base"))
+                                                       label_train=label_train, model="base"))
   tm_train_adv <- system.time(fit_train_adv <- train(dat_train_adv = dat_train_new,
-                                                     label_train,model="advanced"))
+                                                     label_train=label_train,model="advanced"))
 }
 
 
@@ -346,17 +348,32 @@ if(run.train){
 ### Make predictions  
 Here we call the ```test()``` function in ```test.R```. Feed the Baseline Model and the Advanced Model with the completely holdout testing data.  
 ```{r test}
+#################################################################################################
+#to test the test() function, get predictions on training data for base model and advanced model
+load(file="../output/fit_train.Rdata")
+load(file="../output/dat_train_sift.Rdata")
+load(file="../output/dat_train_new.Rdata")
+(pred_train <- test(fit_train = fit_train, dat_test_base = dat_train_sift,
+                   dat_test_adv = dat_train_new))
+#################################################################################################
+#Make predictions and record the time it takes 
 tm_test=NA
 if(run.test){
   load(file="../output/dat_test_sift.Rdata")
   load(file="../output/dat_test_new.Rdata")
   load(file="../output/fit_train.Rdata")
-  tm_test <- system.time(pred_test <- test(fit_train, dat_test))
+  tm_test <- system.time(pred_test <- test(fit_train = fit_train, 
+                                           dat_test_base = dat_test_sift,
+                                           dat_test_adv = dat_test_new))
   save(pred_test, file="../output/pred_test.RData")
   
   #individual times for making predictions using base model and advanced model
-  tm_test_base <- system.time(pred_test_base <- test(fit_train_base, dat_test, model="base"))
-  tm_test_adv <- system.time(pred_test_adv <- test(fit_train_adv, dat_test, model="advanced"))
+  tm_test_base <- system.time(pred_test_base <- test(fit_train = fit_train_base, 
+                                                     dat_test_base = dat_test_sift,
+                                                     model="base"))
+  tm_test_adv <- system.time(pred_test_adv <- test(fit_train = fit_train_adv, 
+                                                   dat_test_adv = dat_test_new, 
+                                                   model="advanced"))
 }
 
 ```
