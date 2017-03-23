@@ -1,13 +1,21 @@
-#KNN classification
+### Author: Ka Heng (Helen) Lo
+### Project 3
+### ADS Spring 2017
+
+#############================  Description  ================#############
+##This file contains two functions:
+#   1) Function to tune parameters of knn model with input set of features 
+#      of training images
+#   2) Function to train data to fit knn model given the 'best' params from 
+#      tuning via cross-validation 
+#########################################################################
+
 
 require(e1071)
 require(data.table)
 require(class)
 
-train_sift <- read.csv("data/train/sift_features.csv")
-train_sift <- t(as.matrix(train_sift))
-train_labels <- read.csv("data/train/labels.csv")
-train_labels <- as.factor(as.matrix(train_labels)[,1])
+
 
 #tune parameter k for KNN classification via 10-fold cross-validation
 tune.knn <- function(dat_train,label_train){
