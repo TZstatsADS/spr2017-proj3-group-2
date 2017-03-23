@@ -58,7 +58,7 @@ tune.bl<- function(dat_train, label_train) {
 train.bl <- function(dat_train,label_train,par_list){
   #use parameters from tuning with CV on the sift features of training images 
   #best_params <- list(ntrees=64, shrinkage=0.16) 
-  label_train <- as.factor(label_train)
+
    bl.gbm<-gbm.fit(x=dat_train, y=label_train, n.trees=par_list$ntrees, distribution="bernoulli", interaction.depth=1, 
                    shrinkage= par_list$shrinkage, bag.fraction=0.5,verbose=FALSE)
 
