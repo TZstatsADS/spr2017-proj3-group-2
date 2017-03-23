@@ -22,20 +22,6 @@ train <- function(dat_train_base=NULL,dat_train_adv=NULL, label_train, model = N
   
   if (is.null(model)) { #Return both Baseline & Advanced models
 
-<<<<<<< HEAD
-##########============BASELINE MODEL============##########
-  ### Train with gradient boosting model
-    ##use 'best' parameters from training images
-   best_params <-  list(ntrees=64, shrinkage=0.16) #tuned on sift features 
-   best_fit_base <- train.bl(dat_train, label_train, par_list=best_params)
-
-##########============ADVANCED MODEL============##########
-  #source("***.R")
-  #best_fit_adv <- train.***(dat_train,label_train)
-  
-  best_params <- list(max_depth=5, eta=.5, nrounds=169) #e.g. tuned on SIFT features
-  best_fit_adv <- train.xgb(dat_train,label_train,par_list=best_params)
-=======
   ##########============BASELINE MODEL============##########
     ### Train with gradient boosting model
       ##use dat_train_base
@@ -51,7 +37,6 @@ train <- function(dat_train_base=NULL,dat_train_adv=NULL, label_train, model = N
     adv_best_params <- list(max_depth=5, eta=.5) 
     adv_best_nrounds=169 #e.g. tuned on SIFT features
     best_fit_adv <- train.xgb(dat_train_adv,label_train,par_list=best_params,best_nrounds)
->>>>>>> origin/master
   
   ##########============OUTPUT DATA============##########
   
