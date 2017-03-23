@@ -28,13 +28,10 @@ tune.bl<- function(dat_train, label_train) {
   
   best_ntrees<- gbm.perf(trainGBM$finalModel, method="OOB")
   best_shrinkage<- trainGBM$bestTune[3]
-<<<<<<< HEAD
-  best_err<- 1 - max(trainGBM$results$Accuracy)
-  
-=======
+
   best_err<- 1- max(trainGBM$results$Accuracy)
 
->>>>>>> origin/master
+
   #train best model
  run.time<-system.time(baseline_train<- gbm.fit(x=dat_train, y=label_train, n.trees=best_ntrees, distribution="bernoulli", interaction.depth=1, 
                                                shrinkage= best_shrinkage, bag.fraction=0.5,verbose=FALSE))
@@ -43,13 +40,8 @@ tune.bl<- function(dat_train, label_train) {
  
   summary.bl <- data.table(Model = "BL GBM",
                            Best_Param_1 = paste("shrinkage =", best_shrinkage),
-<<<<<<< HEAD
-                           Best_Param_2 = paste("ntrees =", best_ntrees), Best_Param_3 = NA,
-                           Best_Error =  best_err ,
-=======
                            Best_Param_2 = paste("ntrees=", best_ntrees), Best_Param_3 = NA,
                            Best_Error = best_err,
->>>>>>> origin/master
                            Training_Time = paste(run.time, "s"))
   
   #save(summary.bl, file="output/summary_best_blgbm.RData")
