@@ -1,3 +1,10 @@
+#######if not install mxnet, run the following code#####
+install.packages("drat", repos="https://cran.rstudio.com")
+    drat:::addRepo("dmlc")
+    install.packages("mxnet")
+##########
+
+
 library(EBImage)
 library(stringr)
 require(mxnet)
