@@ -32,14 +32,15 @@ Term: Spring 2017
 	+ Wrote function to tune GBM (baseline model) and function to train *best* GBM; tuned & trained based on SIFT features and three new feature sets
 	
 + Bo Peng: 
-	+ 
+	+ Feature Extraction
 	+ Prepared presentation
 	
 + Yingxin Zhang: 
-	+ 
+	+ Pre-process images
+	+ Wrote function to train a CNN model; trained and tested model with training images split into a training set and test set
 	
 + Yao Tvan: 
-	+ Wrote function to tune (i.e. find best subset of predictors) Logistic Regression model and function to train *best* Logistic Regression model; tuned & trained based on SIFT features 
+	+ 
 
 
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is organized as follows.
