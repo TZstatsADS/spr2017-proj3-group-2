@@ -117,7 +117,7 @@ if(run.tune.sift) {
 
 ```
 
-####Summary Table: parameter-tuning process on original SIFT features
+#### Summary Table: parameter-tuning process on original SIFT features  
 Summary table of *best* models (i.e. models with *best* parameters) tuned on original SIFT features of the training set via cross-validation, sorted by CV Error.  
 ```{r}
 library(data.table)
@@ -168,7 +168,7 @@ save(summary2, file="../output/summary_best_baseline_original.RData")
 
 
 ### Model selection with new visual features  
-####Import sets of new visual features  
+#### Import sets of new visual features  
 ```{r}
 #import the three csv files - the three new sets of visual features
 new_train_feat1 <- read.csv("../data/train/sift_features_resize+adaptive.csv")
@@ -225,7 +225,7 @@ if (run.tune.new){
 ```
 
 
-####Summary Table: parameter-tuning process on new features 
+#### Summary Table: parameter-tuning process on new features  
 ```{r}
 #load Rdata files
 load("../output/summary_best_xgb_new1.Rdata")
@@ -251,8 +251,8 @@ save(summary2,file="../output/summary_best_models2.Rdata")
 ```
   
   
-###Selecting the *best* Advanced Model  
-####Summary Table of best models tuned on various feature sets (original SIFT & new)  
+### Selecting the *best* Advanced Model  
+#### Summary Table of best models tuned on various feature sets (original SIFT & new)  
 ```{r}
 #load Rdata files 
 load("../output/summary_best_models1.Rdata")
@@ -265,7 +265,7 @@ save(summary3,file="../output/summary_best_models3.Rdata")
 ```
 
 
-##Comparing the Baseline Model and the Advanced Model  
+## Comparing the Baseline Model and the Advanced Model  
 ### Set up controls for evaluation experiments: Baseline Model vs. Advanced Model
 
 + (T/F) train Baseline Model and Advanced Model
