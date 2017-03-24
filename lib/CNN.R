@@ -1,51 +1,56 @@
 #######if not install mxnet, run the following code#####
-install.packages("drat", repos="https://cran.rstudio.com")
-    drat:::addRepo("dmlc")
-    install.packages("mxnet")
+#install.packages("drat", repos="https://cran.rstudio.com")
+#    drat:::addRepo("dmlc")
+#    install.packages("mxnet")
 ##########
 
+#img_dir <- "data/train/raw_images" #change to image directory
+#label <- read.csv("data/train/labels.csv")
+#label <- as.numeric(unlist(label))
+to.rezise.split(img_dir,labels){ #note: labels are numerical values
+  library(EBImage)
+  library(stringr)
+  require(mxnet)
 
-library(EBImage)
-library(stringr)
-require(mxnet)
+  # This script is used to resize images to 28x28 pixels
 
-# This script is used to resize images to 28x28 pixels
+  #img_dir <- "data/train/raw_images" #change to image directory
+  n_files <- length(list.files(img_dir))
+  #label <- read.csv("data/train/labels.csv")
+  #label <- as.numeric(unlist(label))
+  imgvec <- matrix(NA, ncol = 28*28,nrow = 2000)
+  for(i in 1:n_files){
+    ii <- str_pad(i, 4, pad = "0")
+    img <- readImage(paste0(img_dir, "/","image_", ii,".jpg"))
+    img1 <- resize(img,28,28)
+    img1.scale <- img1/max(img1)
+    img2 <- as.vector(img1)
+    imgvec[i,] <- img2
+  }
 
-img_dir <- "./training_data/raw_images"
-n_files <- length(list.files(img_dir))
-label <- read.csv("./training_data/labels.csv")
-label <- as.numeric(unlist(label))
-imgvec <- matrix(NA, ncol = 28*28,nrow = 2000)
-for(i in 1:n_files){
-  ii <- str_pad(i, 4, pad = "0")
-  img <- readImage(paste0(img_dir, "/","image_", ii,".jpg"))
-  img1 <- resize(img,28,28)
-  img1.scale <- img1/max(img1)
-  img2 <- as.vector(img1)
-  imgvec[i,] <- img2
-}
+  # Train-test split
+  set.seed(1)
+  chitr <- sample(1:1000,900,replace = F)
+  dogtr <- sample(1001:2000,900,replace = F)
+  train.data <- imgvec[c(chitr,dogtr),]
+  train.label <- label[c(chitr,dogtr)]
+  test.data <- imgvec[-c(chitr,dogtr),]
+  test.label <- label[-c(chitr,dogtr)]
+  train <- data.frame(cbind(train.label,train.data))
+  test <- data.frame(cbind(test.label,test.data))
 
-# Train-test split
-set.seed(1)
-chitr <- sample(1:1000,900,replace = F)
-dogtr <- sample(1001:2000,900,replace = F)
-train.data <- imgvec[c(chitr,dogtr),]
-train.label <- label[c(chitr,dogtr)]
-test.data <- imgvec[-c(chitr,dogtr),]
-test.label <- label[-c(chitr,dogtr)]
-train <- data.frame(cbind(train.label,train.data))
-test <- data.frame(cbind(test.label,test.data))
+  colnames(train) <- c("label", paste("pixel", c(1:784)))
+  colnames(test) <- c("label", paste("pixel", c(1:784)))
 
-colnames(train) <- c("label", paste("pixel", c(1:784)))
-colnames(test) <- c("label", paste("pixel", c(1:784)))
+  write.csv(train,"output/train_cnn.csv",row.names = F)
+  write.csv(test,"output/test_cnn.csv",row.names = F)
 
-write.csv(train,"train.csv",row.names = F)
-write.csv(test,"test.csv",row.names = F)
-
-# Load train and test datasets
-train <- read.csv("train.csv",header = T)
-test <- read.csv("test.csv",header = T)
-
+  # Load train and test datasets
+  train <- read.csv("train_cnn.csv",header = T)
+  test <- read.csv("test_cnn.csv",header = T)
+  output <- list(train_data = train,test_data = test)
+  return(output)
+  }
 
 
 CNN <- function(train,test){
@@ -85,8 +90,6 @@ mx.set.seed(100)
 devices <- mx.cpu()
 
 
-
-
 #retrain the model using best num.round parameter
 model <- mx.model.FeedForward.create(NN_model,
                                      X = train_array,
@@ -107,5 +110,7 @@ errorrate <- sum(diag(table(test[, 1], predicted_labels)))/200
 end.time <- Sys.time()
 runtime <- end.time-start.time
 saveRDS(model,"summary_best_CNN.rds")
-return(cat("the test error is:",errorrate,'\n',"the running time is:",runtime,"s"))
+cat("the test error is:",errorrate,'\n',"the running time is:",runtime,"s")
+ouput <- list(test_err = errorrate, train_time = runtime)
+return(output)
 }
