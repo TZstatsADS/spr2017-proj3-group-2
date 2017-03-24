@@ -3,8 +3,8 @@ title: 'Project 3: Main Script'
 author: "Ka Heng (Helen) Lo"
 date: "March 24, 2017"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 This file firstly details the model selection process for an advanced binary classification model, that takes in images and classifies them as either a labradoodle ("1") or fried chicken ("0") - simply referred to as the Advanced Model. Secondly, it runs evaluation experiments to compare the Baseline Model - gradient boosting model (gbm) with parameters tuned on the original SIFT features - with our Advanced Model.

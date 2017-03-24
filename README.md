@@ -20,7 +20,7 @@ Term: Spring 2017
 	+ Wrote function to tune parameters for XGBoost model and function to train the *best* XGBoost model; tuned & trained based on SIFT features and three new feature sets 
 	+ Wrote individual functions to tune parameters for SVM with linear kernel, SVM with RBF (radial) kernel, AdaBag model, AdaBoost.M1 model, AdaBoost_SAMME model, and KNN model; tuned based on original SIFT features
 	+ Wrote individual functions to train *best* SVM with linear kernel, SVM with RBF (radial) kernel, AdaBag model, AdaBoost.M1 model, AdaBoost_SAMME model, and KNN model; trained based on original SIFT features 
-	+ Wrote main.Rmd script with summary table outputs for model selection process for Advanced Model
+	+ Wrote main.Rmd script with summary table outputs for model selection process for Advanced Model; edited files in lib folder to allow for easy reproducibility of model selection process
 	+ Wrote train.R
 	+ Wrote test.R
 	
@@ -28,7 +28,7 @@ Term: Spring 2017
 	+ Wrote function to tune GBM (baseline model) and function to train *best* GBM; tuned & trained based on SIFT features and three new feature sets
 	
 + Bo Peng: 
-	+ Feature Extraction
+	+ Feature Extraction: SIFT- resize+adaptive, SIFT- resize, SIFT- adaptive
 	+ Prepared presentation
 	
 + Yingxin Zhang: 
