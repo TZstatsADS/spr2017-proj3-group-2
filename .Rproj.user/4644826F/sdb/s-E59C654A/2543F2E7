@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "## Function to tune parameters of baseline gbm model with given SIFT features of \n#   training images\n## Function to train data to fit baseline model given the 'best' params from \n#   tuning via cross-validation \n\n#train_sift <- read.csv(\"data/train/sift_features.csv\")\n#train_sift <- t(as.matrix(train_sift))\n#train_labels <- read.csv(\"data/train/labels.csv\")\n#train_labels <- as.factor(as.matrix(train_labels)[,1])\n\n#Call this function to reproduce process of tuning params for baseline model via 5-fold CV\n# -- Returns a summary data.table object that details best parameters used (ntrees and shrinkage)\n#    based on training images and also saves the object (fitted best baseline model) in a .RData file \nset.seed(15)\ntune.bl<- function(dat_train, label_train) {\n  \n  label_train<- as.factor(label_train)\n  library(\"gbm\")\n  library(\"caret\")\n  library(data.table)\n  \n  gbmGrid<- expand.grid(n.trees=300, interaction.depth=1, shrinkage=seq(0.01, 0.25, 0.05), n.minobsinnode=10)\n  \n  trainGBM<- train(x=dat_train, y=label_train, distribution=\"bernoulli\", method=\"gbm\", tuneGrid=gbmGrid,   \n                   trControl = trainControl(method = \"cv\", number = 5, \n                                            verboseIter = FALSE, \n                                            returnResamp = \"all\"))\n  \n  best_ntrees<- gbm.perf(trainGBM$finalModel, method=\"OOB\")\n  best_shrinkage<- trainGBM$bestTune[3]\n\n  best_err<- 1- max(trainGBM$results$Accuracy)\n\n\n  #train best model\n run.time<-system.time(baseline_train<- gbm.fit(x=dat_train, y=label_train, n.trees=best_ntrees, distribution=\"bernoulli\", interaction.depth=1, \n                                               shrinkage= best_shrinkage, bag.fraction=0.5,verbose=FALSE))\n run.time <- round(run.time[1],3)\n cat(\"Time for training model: \" ,run.time, \"s \\n\")\n \n  summary.bl <- data.table(Model = \"BL GBM\",\n                           Best_Param_1 = paste(\"shrinkage =\", best_shrinkage),\n                           Best_Param_2 = paste(\"ntrees=\", best_ntrees), Best_Param_3 = NA,\n                           Best_Error = best_err,\n                           Training_Time = paste(run.time, \"s\"))\n  \n  #save(summary.bl, file=\"output/summary_best_blgbm.RData\")\n  #return(list(sum=summary.bl, output=trainGBM, model=baseline_train)) \n  return(summary.bl)\n  \n} \n\n#tune.bl(train_sift,train_labels)\n\n\n###\n### source this R file and call this function in train.R\ntrain.bl <- function(dat_train,label_train,par_list){\n  #use parameters from tuning with CV on the sift features of training images \n  #best_params <- list(ntrees=64, shrinkage=0.16) \n\n   bl.gbm<-gbm.fit(x=dat_train, y=label_train, n.trees=par_list$ntrees, distribution=\"bernoulli\", interaction.depth=1, \n                   shrinkage= par_list$shrinkage, bag.fraction=0.5,verbose=FALSE)\n\n  return(bl.gbm)\n}\n",
+    "created" : 1490230470239.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1020122160",
+    "id" : "2543F2E7",
+    "lastKnownWriteTime" : 1490303506,
+    "last_content_update" : 1490303506,
+    "path" : "~/Desktop/Applied Data Science/Proj3/spr2017-proj3-group-2/lib/blgbm.R",
+    "project_path" : "lib/blgbm.R",
+    "properties" : {
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

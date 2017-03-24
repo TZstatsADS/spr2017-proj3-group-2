@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "### Author: Ka Heng (Helen) Lo\n### Project 3\n### ADS Spring 2017\n#############################################################################\n### Train baseline and advanced classification model with training images ###\n#############################################################################\n\ntrain <- function(dat_train_base=NULL,dat_train_adv=NULL, label_train, model = \"both\"){\n  ### Input: \n  ###  -  R object that contains SIFT features of training images\n  ###  -  R object that contains new features (SIFT-resize+adaptive) of training images\n  ###  -  R object of training sample labels.\n  ###  -  type = string; \"both\", baseline\" or \"advanced\"\n  ### Output: \n  ###      list that contains trained classifiers in the form of R model objects\n  ###      and the additional parameter for predict function specific to the object class\n  ###         --> in this case, the additional parameter to pass to predict() is best_iter\n  \n  ### load libraries\n  library(\"gbm\")\n  ###source files where functions are located\n  source(\"../lib/xgboost.R\")\n  source(\"../lib/blgbm.R\")\n  \n  if (model == \"both\") { #Return both Baseline & Advanced models\n\n  ##########============BASELINE MODEL============##########\n  ### Train with gradient boosting model\n    ##use 'best' parameters from training images\n    base_best_params <-  list(ntrees=64, shrinkage=0.16) #tuned on sift features \n    base_best_n.trees <- 64\n    best_fit_base <- train.bl(dat_train_base, label_train, par_list=base_best_params)\n\n  ##########============ADVANCED MODEL============##########\n  #xgboost on SIFT-resize+adaptive features \n    adv_best_params <- list(max_depth=7, eta=.5) \n    adv_best_nrounds=45 \n    best_fit_adv <- train.xgb(dat_train_adv,label_train,par_list=adv_best_params,adv_best_nrounds)\n  \n  ##########============OUTPUT DATA============##########\n  \n    # output = list(baseline_fit = gbm.object , base_best_iter= integer,\n    #               advanced_fit =  xgb.Booster object, adv_best_iter= integer)\n    output <- list(baseline_fit=best_fit_base, base_best_iter=base_best_n.trees,\n                   advanced_fit=best_fit_adv,adv_best_iter=adv_best_nrounds)\n    return(output)\n  }\n  \n  else if (model == \"base\"){\n    ##########============BASELINE MODEL============##########\n    ### Train with gradient boosting model\n    ##use dat_train_base\n    ##use 'best' parameters from training images\n    base_best_params <-  list(ntrees=64, shrinkage=0.16) #tuned on sift features \n    base_best_n.trees <- 64\n    best_fit_base <- train.bl(dat_train_base, label_train, par_list=base_best_params)\n    \n    base.output <- list(baseline_fit=best_fit_base, base_best_iter=base_best_n.trees)\n    return(base.output)\n  }\n  \n  else if (model == \"advanced\"){\n    ##########============ADVANCED MODEL============##########\n\n    adv_best_params <- list(max_depth=7, eta=.5) \n    adv_best_nrounds=45 #e.g. tuned on SIFT features\n    best_fit_adv <- train.xgb(dat_train_adv,label_train,par_list=adv_best_params,adv_best_nrounds)\n    \n    adv.output <- list(advanced_fit=best_fit_adv, adv_best_iter=adv_best_nrounds)\n    return(adv.output)\n  }\n  \n}\n",
+    "created" : 1489528246807.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2436634248",
+    "id" : "469EF555",
+    "lastKnownWriteTime" : 1490305149,
+    "last_content_update" : 1490305149786,
+    "path" : "~/Desktop/Applied Data Science/Proj3/spr2017-proj3-group-2/lib/train.R",
+    "project_path" : "lib/train.R",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
