@@ -31,17 +31,6 @@ library(adabag)
 library(caret)
 ```
 
-### Specify directories.
-
-Set the working directory to the image folder. Specify the training and the testing set. For data without an independent test/validation set, you need to create your own testing data by random subsampling. In order to obain reproducible results, set.seed() whenever randomization is used. 
-
-Provide directories for raw images. Training set and test set should be in different subfolders. 
-```{r}
-experiment_dir <- "../data/" # This will be modified for different data sets.
-img_train_dir <- paste(experiment_dir, "train/", sep="")
-img_test_dir <- paste(experiment_dir, "test/", sep="")
-```
-
 ### Import class labels for training images  
 We code labradoodles as "1" and fried chicken as "0" for binary classification.
 
@@ -130,11 +119,7 @@ load("../output/summary_best_svm_lin.Rdata")
 load("../output/summary_best_svm_rad.Rdata")
 load("../output/summary_best_knn.Rdata")
 
-#here we have two separate tables for the AdaBag algorithm
-#   -tuning with cross validation chooses the second one (mfinal=100) 
-#   -factoring in training time, the first one (mfinal=10), is better
-load("../output/summary_best_AdaBag.Rdata") #mfinal=10; higher cv error, but smaller training time
-load("../output/summary_best_AdaBag2.Rdata") #mfinal=100; lower cv error, but larger training time
+load("../output/summary_best_AdaBag2.Rdata") 
 
 load("../output/summary_best_AdaBoost.M1.Rdata")
 load("../output/summary_best_AdaBoost_SAMME.Rdata")
@@ -145,7 +130,7 @@ load("../output/summary_best_blgbm.Rdata")
 #            "Best_Error", "Training_Time"
 #  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
 summary1 <- rbind(summary.xgb, summary.svm.lin,
-                 summary.svm.rad, summary.AdaBag,
+                 summary.svm.rad, 
                  summary.AdaBag2, summary.AdaBoost.M1,
                  summary.AdaBoost_SAMME,
                  summary.knn,summary.bl) 
@@ -154,7 +139,7 @@ summary1 <- rbind(summary.xgb, summary.svm.lin,
 summary1 <- summary1[order(summary1$Best_Error)]
 
 #add column for feature set models are tuned on
-(summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",9), summary1[,2:6]))
+(summary1 <- data.table(summary1[,1], Features = rep("Original SIFT",8), summary1[,2:6]))
 
 save(summary1,file="../output/summary_best_models1.Rdata")
 
@@ -244,9 +229,47 @@ summary2 <- summary2[order(summary2$Best_Error)]
 save(summary2,file="../output/summary_best_models2.Rdata")
 ```
   
+### Convolutional Neural Network (CNN)  
+#### Tune CNN model on set of raw training images via cross-validation  
+* Set up control for tuning CNN on set of raw images  
++ (T/F) tune CNN  
+```{r}
+###### T/F to reproduce the tuning process for all models considered ######
+run.tune.cnn = FALSE
+```
+* Parameter-tuning process  
+```{r}
+if (run.tune.cnn) {
+  img_train_dir <- "../data/train/raw_images"
+  source("../lib/CNN.R")
+  source("../lib/CNNcv.R")
+  
+  #first resize the raw images and then split into test set(200) and train set(1800)
+  data_list <- to.resize.split(img_train_dir,label_train)
+  
+  
+  #cross-validation on the resized train set (1800 images)
+  iter <- seq(60,100,by=10) #iter is the range of the tune parameters
+  #get best num.rounds
+  best_num.rounds <- CNNcv(data_list$train_data,iter)
+  
+  #retrain data (1800 images) ; get run.time; and test error using test set(200 images)
+  cnn.output <- CNN(data_list$train_data,data_list$test_data)
+  
+  summary.cnn <- data.table(Model = "CNN", Features = NA,
+             Best_Param_1 = paste("num.rounds =",best_num.rounds),
+             Best_Param_2 = NA,
+             Best_Param_3 = NA,
+             Best_Error = cnn.output$test_err,
+             Training_Time = paste(cnn.output$train_time, "s"))
+  #save(summary.cnn, file="output/summary_best_cnn.RData")
+
+}
+```
+
   
 ### Selecting the *best* Advanced Model  
-#### Summary Table of best models tuned on various feature sets (original SIFT & new)  
+#### Summary Table of best models tuned on various feature sets (original SIFT & new) + CNN   
 ```{r}
 #load Rdata files 
 load("../output/summary_best_models1.Rdata")
@@ -258,8 +281,11 @@ summary3 <- rbind(summary1,summary2,summary.cnn)
 (summary3 <- summary3[order(summary3$Best_Error)])
 
 save(summary3,file="../output/summary_best_models3.Rdata")
+save(summary3,file="../output/summary_best_models3.Rdata")
 ```
-
+  
+In the summary table, the models under consideration are ranked by best (min) error. The Baseline Model (GBM with original SIFT) is ranked 7th with cross-validation estimated prediction error of .2365 and training time of 15.234 seconds. Model 1 in the table (XGBoost with original SIFT) has the lowest estimated prediction error of 5.267342e-05 (<<.2365), but it has a higher training time of 49.148 seconds (>15.234 seconds). Model 2 in the table (CNN with 1800 of the 2000 raw images) has an test error (testing with the remaining 200 of the 2000 raw images) of .1355, but it has a really large training time of 321.5955 seconds (>>15.234 seconds). Model 3 in the table (XGBoost with SIFT- resize+adaptive) has a decently low cross-validation estimated prediction error of .189 (<.2365) and a decently low training time of 19.032 seconds (only slightly larger, but comparable to 15.234 seconds). Thus, we chose Model 3 (XGBoost with SIFT- resize+adaptive) to be our advanced model, as it seems the best compromise between a low estimated prediction error and a small training time.  
+  
 
 ## Comparing the Baseline Model and the Advanced Model  
 ### Set up controls for evaluation experiments: Baseline Model vs. Advanced Model
