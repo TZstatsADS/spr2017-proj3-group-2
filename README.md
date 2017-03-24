@@ -19,7 +19,7 @@ Term: Spring 2017
 + Ka Heng (Helen) Lo: 
 	+ Wrote function to tune parameters for XGBoost model and function to train the *best* XGBoost model; tuned & trained based on SIFT features and three new feature sets 
 	+ Wrote individual functions to tune parameters for SVM with linear kernel, SVM with RBF (radial) kernel, AdaBag model, AdaBoost.M1 model, AdaBoost_SAMME model, and KNN model; tuned based on original SIFT features
-	+ Wrote individual functions to train *best* SVM with linear kernel, *best* SVM with RBF (radial) kernel, *best* AdaBag model, *best* AdaBoost.M1 model, *best* AdaBoost_SAMME model, and *best* KNN model; trained based on original SIFT features 
+	+ Wrote individual functions to train *best* SVM with linear kernel, SVM with RBF (radial) kernel, AdaBag model, AdaBoost.M1 model, AdaBoost_SAMME model, and KNN model; trained based on original SIFT features 
 	+ Wrote main.Rmd script with summary table outputs for model selection process for Advanced Model
 	+ Wrote train.R
 	+ Wrote test.R
