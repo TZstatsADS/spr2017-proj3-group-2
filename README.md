@@ -18,14 +18,10 @@ Term: Spring 2017
 **Contribution statement**: ([default](doc/a_note_on_contributions.md)) 
 + Ka Heng (Helen) Lo: 
 	+ Wrote function to tune parameters for XGBoost model and function to train the *best* XGBoost model; tuned & trained based on SIFT features and three new feature sets 
-	+ Wrote function to tune parameters for SVM with linear kernel and function to train *best* SVM with linear kernel; tuned & trained based on SIFT features 
-	+ Wrote function to tune SVM with RBF (radial) kernel and function to train *best* SVM with RBF (radial) kernel; tuned & trained based on SIFT features
-	+ Wrote function to tune AdaBag model and function to train the *best* AdaBag model; tuned and trained based on SIFT features
-	+ Wrote function to tune AdaBoost.M1 model and function to train the *best* AdaBoost.M1 model; tuned & trained based on SIFT features
-	+ Wrote function to tune AdaBoost_SAMME model and function to train the *best* AdaBoost_SAMME model; tuned & trained based on SIFT features
-	+ Wrote function to tune KNN model and function to train the *best* KNN model; tuned & trained based on SIFT features
+	+ Wrote individual functions to tune parameters for SVM with linear kernel, SVM with RBF (radial) kernel, AdaBag model, AdaBoost.M1 model, AdaBoost_SAMME model, and KNN model; tuned based on original SIFT features
+	+ Wrote individual functions to train *best* SVM with linear kernel, *best* SVM with RBF (radial) kernel, *best* AdaBag model, *best* AdaBoost.M1 model, *best* AdaBoost_SAMME model, and *best* KNN model; trained based on original SIFT features 
 	+ Wrote main.Rmd script with summary table outputs for model selection process for Advanced Model
-	+ Wrote train.R 
+	+ Wrote train.R
 	+ Wrote test.R
 	
 + Jia Hui Tan: 
