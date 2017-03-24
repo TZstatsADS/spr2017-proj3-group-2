@@ -131,7 +131,7 @@ if(!require(&quot;EBImage&quot;)){
   biocLite(&quot;EBImage&quot;)
 }</code></pre>
 <pre><code>## Loading required package: EBImage</code></pre>
-<pre class="r"><code>needed &lt;- setdiff(c(&quot;gbm&quot;, &quot;data.table&quot;, &quot;e1071&quot;, &quot;class&quot;, &quot;adabag&quot;,&quot;caret&quot;),
+<pre class="r"><code>needed &lt;- setdiff(c(&quot;gbm&quot;, &quot;data.table&quot;, &quot;e1071&quot;, &quot;class&quot;, &quot;adabag&quot;,&quot;caret&quot;, &quot;xgboost&quot;),
                   rownames(installed.packages()))
 if (length(needed) &gt; 0 ){
   install.packages(needed)
@@ -161,7 +161,8 @@ library(adabag)</code></pre>
 <pre><code>## The following object is masked from 'package:survival':
 ## 
 ##     cluster</code></pre>
-<pre class="r"><code>library(caret)</code></pre>
+<pre class="r"><code>library(caret)
+library(xgboost)</code></pre>
 <div id="import-class-labels-for-training-images" class="section level3">
 <h3>Import class labels for training images</h3>
 <p>We code labradoodles as “1” and fried chicken as “0” for binary classification.</p>
@@ -544,7 +545,6 @@ if(run.train){
   tm_train_adv &lt;- system.time(fit_train_adv &lt;- train(dat_train_adv = dat_train_new,
                                                      label_train=label_train,model=&quot;advanced&quot;))
 }</code></pre>
-<pre><code>## Loading required package: xgboost</code></pre>
 </div>
 <div id="make-predictions" class="section level3">
 <h3>Make predictions</h3>
@@ -715,14 +715,14 @@ cat(&quot;Time for training models (Baseline + Advanced)=&quot;, tm_train[1], &q
 cat(&quot;Time for training Baseline Model=&quot;, tm_train_base[1], &quot;s \n&quot;)
 cat(&quot;Time for training Advanced Model=&quot;, tm_train_adv[1], &quot;s \n&quot;)
 }</code></pre>
-<pre><code>## Time for training models (Baseline + Advanced)= 30.202 s 
-## Time for training Baseline Model= 10.507 s 
-## Time for training Advanced Model= 19.383 s</code></pre>
+<pre><code>## Time for training models (Baseline + Advanced)= 30.608 s 
+## Time for training Baseline Model= 10.645 s 
+## Time for training Advanced Model= 19.525 s</code></pre>
 <pre class="r"><code>if(run.test){
 cat(&quot;Time for making predictions (Baseline + Advanced)=&quot;, tm_test[1], &quot;s \n&quot;)
 cat(&quot;Time for making predictions with Baseline Model=&quot;, tm_test_base[1], &quot;s \n&quot;)
 cat(&quot;Time for making predictions with Advanced Model=&quot;, tm_test_adv[1], &quot;s \n&quot;)
-}</code></pre>
+} </code></pre>
 </div>
 </div>
 
