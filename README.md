@@ -37,9 +37,8 @@ Term: Spring 2017
 	+ Wrote function to train a CNN model; trained and tested model with training images split into a training set and test set
 	
 + Yao Tvan: 
-	+ 
-
-
+	+ Wrote the logistics train.R.
+	
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is organized as follows.
 
 ```
