@@ -13,7 +13,7 @@ Term: Spring 2017
 	+ Yingxin Zhang
 	+ Yao Tvan
 
-+ Project summary: In this project, we created a classification engine for grayscale images of poodles versus grayscale images of fried chicken. 
++ Project summary: In this project, we created a classification engine for grayscale images of poodles versus grayscale images of fried chicken. We constructed three different systems of feature processing on top of the basic SIFT features, namely adaptive thresholding, resizing, and a combination of both. We also tried numerous training models such as XGBoost, SVM with linear & kernel radial, adabag, KNN,and the baseline GBM model on the basic SIFT features. Using just the basic SIFT features to evaluate, we chose XGBoost as the advanced model as it has lowest error rate. We then used the XGBoost model to evaluate the three different features options, and chose adaptive+resizing as our final features.R processing model as it presents the best combination of a low prediction error rate and low training time. 
 	
 **Contribution statement**: ([default](doc/a_note_on_contributions.md)) 
 + Ka Heng (Helen) Lo: 
@@ -26,6 +26,7 @@ Term: Spring 2017
 	
 + Jia Hui Tan: 
 	+ Wrote function to tune GBM (baseline model) and function to train *best* GBM; tuned & trained based on SIFT features and three new feature sets
+	+ Edited and organized Github 
 	
 + Bo Peng: 
 	+ Feature Extraction: SIFT- resize+adaptive, SIFT- resize, SIFT- adaptive
