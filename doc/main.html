@@ -162,14 +162,6 @@ library(adabag)</code></pre>
 ## 
 ##     cluster</code></pre>
 <pre class="r"><code>library(caret)</code></pre>
-<div id="specify-directories." class="section level3">
-<h3>Specify directories.</h3>
-<p>Set the working directory to the image folder. Specify the training and the testing set. For data without an independent test/validation set, you need to create your own testing data by random subsampling. In order to obain reproducible results, set.seed() whenever randomization is used.</p>
-<p>Provide directories for raw images. Training set and test set should be in different subfolders.</p>
-<pre class="r"><code>experiment_dir &lt;- &quot;../data/&quot; # This will be modified for different data sets.
-img_train_dir &lt;- paste(experiment_dir, &quot;train/&quot;, sep=&quot;&quot;)
-img_test_dir &lt;- paste(experiment_dir, &quot;test/&quot;, sep=&quot;&quot;)</code></pre>
-</div>
 <div id="import-class-labels-for-training-images" class="section level3">
 <h3>Import class labels for training images</h3>
 <p>We code labradoodles as “1” and fried chicken as “0” for binary classification.</p>
@@ -250,11 +242,7 @@ load(&quot;../output/summary_best_svm_lin.Rdata&quot;)
 load(&quot;../output/summary_best_svm_rad.Rdata&quot;)
 load(&quot;../output/summary_best_knn.Rdata&quot;)
 
-#here we have two separate tables for the AdaBag algorithm
-#   -tuning with cross validation chooses the second one (mfinal=100) 
-#   -factoring in training time, the first one (mfinal=10), is better
-load(&quot;../output/summary_best_AdaBag.Rdata&quot;) #mfinal=10; higher cv error, but smaller training time
-load(&quot;../output/summary_best_AdaBag2.Rdata&quot;) #mfinal=100; lower cv error, but larger training time
+load(&quot;../output/summary_best_AdaBag2.Rdata&quot;) 
 
 load(&quot;../output/summary_best_AdaBoost.M1.Rdata&quot;)
 load(&quot;../output/summary_best_AdaBoost_SAMME.Rdata&quot;)
@@ -265,7 +253,7 @@ load(&quot;../output/summary_best_blgbm.Rdata&quot;)
 #            &quot;Best_Error&quot;, &quot;Training_Time&quot;
 #  - NA values for Best_Param_2 and/or Best_Param_3 if model has less than 3 params
 summary1 &lt;- rbind(summary.xgb, summary.svm.lin,
-                 summary.svm.rad, summary.AdaBag,
+                 summary.svm.rad, 
                  summary.AdaBag2, summary.AdaBoost.M1,
                  summary.AdaBoost_SAMME,
                  summary.knn,summary.bl) 
@@ -274,7 +262,7 @@ summary1 &lt;- rbind(summary.xgb, summary.svm.lin,
 summary1 &lt;- summary1[order(summary1$Best_Error)]
 
 #add column for feature set models are tuned on
-(summary1 &lt;- data.table(summary1[,1], Features = rep(&quot;Original SIFT&quot;,9), summary1[,2:6]))</code></pre>
+(summary1 &lt;- data.table(summary1[,1], Features = rep(&quot;Original SIFT&quot;,8), summary1[,2:6]))</code></pre>
 <pre><code>##                     Model      Features     Best_Param_1 Best_Param_2
 ## 1:                XGBoost Original SIFT    max_depth = 5    eta = 0.5
 ## 2:                 BL GBM Original SIFT shrinkage = 0.16   ntrees= 64
@@ -282,9 +270,8 @@ summary1 &lt;- summary1[order(summary1$Best_Error)]
 ## 4:                 AdaBag Original SIFT     mfinal = 100           NA
 ## 5:            AdaBoost.M1 Original SIFT      mfinal = 15           NA
 ## 6:         AdaBoost_SAMME Original SIFT      mfinal = 15           NA
-## 7:                 AdaBag Original SIFT      mfinal = 10           NA
-## 8:                    KNN Original SIFT            k = 1           NA
-## 9: SVM with Radial Kernel Original SIFT       cost = 500    gamma = 2
+## 7:                    KNN Original SIFT            k = 1           NA
+## 8: SVM with Radial Kernel Original SIFT       cost = 500    gamma = 2
 ##     Best_Param_3   Best_Error Training_Time
 ## 1: nrounds = 169 5.267342e-05      49.148 s
 ## 2:            NA 2.365000e-01      15.234 s
@@ -292,9 +279,8 @@ summary1 &lt;- summary1[order(summary1$Best_Error)]
 ## 4:            NA 2.915000e-01    1780.513 s
 ## 5:            NA 3.095000e-01     239.031 s
 ## 6:            NA 3.190000e-01     249.718 s
-## 7:            NA 3.400000e-01      221.65 s
-## 8:            NA 3.735000e-01            NA
-## 9:            NA 4.020000e-01      73.638 s</code></pre>
+## 7:            NA 3.735000e-01            NA
+## 8:            NA 4.020000e-01      73.638 s</code></pre>
 <pre class="r"><code>save(summary1,file=&quot;../output/summary_best_models1.Rdata&quot;)</code></pre>
 </div>
 </div>
@@ -395,49 +381,95 @@ summary2 &lt;- summary2[order(summary2$Best_Error)]
 <pre class="r"><code>save(summary2,file=&quot;../output/summary_best_models2.Rdata&quot;)</code></pre>
 </div>
 </div>
+<div id="convolutional-neural-network-cnn" class="section level3">
+<h3>Convolutional Neural Network (CNN)</h3>
+<div id="tune-cnn-model-on-set-of-raw-training-images-via-cross-validation" class="section level4">
+<h4>Tune CNN model on set of raw training images via cross-validation</h4>
+<ul>
+<li>Set up control for tuning CNN on set of raw images<br />
+</li>
+<li>(T/F) tune CNN</li>
+</ul>
+<pre class="r"><code>###### T/F to reproduce the tuning process for all models considered ######
+run.tune.cnn = FALSE</code></pre>
+<ul>
+<li>Parameter-tuning process</li>
+</ul>
+<pre class="r"><code>if (run.tune.cnn) {
+  img_train_dir &lt;- &quot;../data/train/raw_images&quot;
+  source(&quot;../lib/CNN.R&quot;)
+  source(&quot;../lib/CNNcv.R&quot;)
+  
+  #first resize the raw images and then split into test set(200) and train set(1800)
+  data_list &lt;- to.resize.split(img_train_dir,label_train)
+  
+  
+  #cross-validation on the resized train set (1800 images)
+  iter &lt;- seq(60,100,by=10) #iter is the range of the tune parameters
+  #get best num.rounds
+  best_num.rounds &lt;- CNNcv(data_list$train_data,iter)
+  
+  #retrain data (1800 images) ; get run.time; and test error using test set(200 images)
+  cnn.output &lt;- CNN(data_list$train_data,data_list$test_data)
+  
+  summary.cnn &lt;- data.table(Model = &quot;CNN&quot;, Features = NA,
+             Best_Param_1 = paste(&quot;num.rounds =&quot;,best_num.rounds),
+             Best_Param_2 = NA,
+             Best_Param_3 = NA,
+             Best_Error = cnn.output$test_err,
+             Training_Time = paste(cnn.output$train_time, &quot;s&quot;))
+  #save(summary.cnn, file=&quot;output/summary_best_cnn.RData&quot;)
+
+}</code></pre>
+</div>
+</div>
 <div id="selecting-the-best-advanced-model" class="section level3">
 <h3>Selecting the <em>best</em> Advanced Model</h3>
-<div id="summary-table-of-best-models-tuned-on-various-feature-sets-original-sift-new" class="section level4">
-<h4>Summary Table of best models tuned on various feature sets (original SIFT &amp; new)</h4>
+<div id="summary-table-of-best-models-tuned-on-various-feature-sets-original-sift-new-cnn" class="section level4">
+<h4>Summary Table of best models tuned on various feature sets (original SIFT &amp; new) + CNN</h4>
 <pre class="r"><code>#load Rdata files 
 load(&quot;../output/summary_best_models1.Rdata&quot;)
 load(&quot;../output/summary_best_models2.Rdata&quot;)
 
-summary3 &lt;- rbind(summary1,summary2)
+load(&quot;../output/summary_best_cnn.Rdata&quot;)
+
+summary3 &lt;- rbind(summary1,summary2,summary.cnn)
 (summary3 &lt;- summary3[order(summary3$Best_Error)])</code></pre>
 <pre><code>##                      Model              Features     Best_Param_1
 ##  1:                XGBoost         Original SIFT    max_depth = 5
-##  2:                XGBoost SIFT- resize+adaptive    max_depth = 7
-##  3:                 BL GBM          SIFT- resize shrinkage = 0.21
-##  4:                XGBoost        SIFT- adaptive    max_depth = 7
-##  5:                 BL GBM SIFT- resize+adaptive shrinkage = 0.16
-##  6:                 BL GBM         Original SIFT shrinkage = 0.16
-##  7:                 BL GBM          SIFT- resize shrinkage = 0.21
-##  8: SVM with linear kernel         Original SIFT      cost = 5000
-##  9:                XGBoost        SIFT- adaptive    max_depth = 7
-## 10:                 AdaBag         Original SIFT     mfinal = 100
-## 11:            AdaBoost.M1         Original SIFT      mfinal = 15
-## 12:         AdaBoost_SAMME         Original SIFT      mfinal = 15
-## 13:                 AdaBag         Original SIFT      mfinal = 10
+##  2:                    CNN                    NA   num.round = 60
+##  3:                XGBoost SIFT- resize+adaptive    max_depth = 7
+##  4:                 BL GBM          SIFT- resize shrinkage = 0.21
+##  5:                XGBoost        SIFT- adaptive    max_depth = 7
+##  6:                 BL GBM SIFT- resize+adaptive shrinkage = 0.16
+##  7:                 BL GBM         Original SIFT shrinkage = 0.16
+##  8:                 BL GBM          SIFT- resize shrinkage = 0.21
+##  9: SVM with linear kernel         Original SIFT      cost = 5000
+## 10:                XGBoost        SIFT- adaptive    max_depth = 7
+## 11:                 AdaBag         Original SIFT     mfinal = 100
+## 12:            AdaBoost.M1         Original SIFT      mfinal = 15
+## 13:         AdaBoost_SAMME         Original SIFT      mfinal = 15
 ## 14:                    KNN         Original SIFT            k = 1
 ## 15: SVM with Radial Kernel         Original SIFT       cost = 500
 ##     Best_Param_2  Best_Param_3   Best_Error Training_Time
 ##  1:    eta = 0.5 nrounds = 169 5.267342e-05      49.148 s
-##  2:    eta = 0.5  nrounds = 45 1.890000e-01      19.032 s
-##  3:   ntrees= 48            NA 1.900000e-01      11.324 s
-##  4:    eta = 0.2  nrounds = 62 1.905000e-01      26.374 s
-##  5:  ntrees= 127            NA 1.935000e-01      23.067 s
-##  6:   ntrees= 64            NA 2.365000e-01      15.234 s
-##  7:   ntrees= 46            NA 2.470000e-01      12.802 s
-##  8:           NA            NA 2.520000e-01      73.452 s
-##  9:    eta = 0.2  nrounds = 44 2.575000e-01      20.311 s
-## 10:           NA            NA 2.915000e-01    1780.513 s
-## 11:           NA            NA 3.095000e-01     239.031 s
-## 12:           NA            NA 3.190000e-01     249.718 s
-## 13:           NA            NA 3.400000e-01      221.65 s
+##  2:           NA            NA 1.355000e-01    321.5955 s
+##  3:    eta = 0.5  nrounds = 45 1.890000e-01      19.032 s
+##  4:   ntrees= 48            NA 1.900000e-01      11.324 s
+##  5:    eta = 0.2  nrounds = 62 1.905000e-01      26.374 s
+##  6:  ntrees= 127            NA 1.935000e-01      23.067 s
+##  7:   ntrees= 64            NA 2.365000e-01      15.234 s
+##  8:   ntrees= 46            NA 2.470000e-01      12.802 s
+##  9:           NA            NA 2.520000e-01      73.452 s
+## 10:    eta = 0.2  nrounds = 44 2.575000e-01      20.311 s
+## 11:           NA            NA 2.915000e-01    1780.513 s
+## 12:           NA            NA 3.095000e-01     239.031 s
+## 13:           NA            NA 3.190000e-01     249.718 s
 ## 14:           NA            NA 3.735000e-01            NA
 ## 15:    gamma = 2            NA 4.020000e-01      73.638 s</code></pre>
-<pre class="r"><code>save(summary3,file=&quot;../output/summary_best_models3.Rdata&quot;)</code></pre>
+<pre class="r"><code>save(summary3,file=&quot;../output/summary_best_models3.Rdata&quot;)
+save(summary3,file=&quot;../output/summary_best_models3.Rdata&quot;)</code></pre>
+<p>In the summary table, the models under consideration are ranked by best (min) error. The Baseline Model (GBM with original SIFT) is ranked 7th with cross-validation estimated prediction error of .2365 and training time of 15.234 seconds. Model 1 in the table (XGBoost with original SIFT) has the lowest estimated prediction error of 5.267342e-05 (&lt;&lt;.2365), but it has a higher training time of 49.148 seconds (&gt;15.234 seconds). Model 2 in the table (CNN with 1800 of the 2000 raw images) has an test error (testing with the remaining 200 of the 2000 raw images) of .1355, but it has a really large training time of 321.5955 seconds (&gt;&gt;15.234 seconds). Model 3 in the table (XGBoost with SIFT- resize+adaptive) has a decently low cross-validation estimated prediction error of .189 (&lt;.2365) and a decently low training time of 19.032 seconds (only slightly larger, but comparable to 15.234 seconds). Thus, we chose Model 3 (XGBoost with SIFT- resize+adaptive) to be our advanced model, as it seems the best compromise between a low estimated prediction error and a small training time.</p>
 </div>
 </div>
 </div>
@@ -683,9 +715,9 @@ cat(&quot;Time for training models (Baseline + Advanced)=&quot;, tm_train[1], &q
 cat(&quot;Time for training Baseline Model=&quot;, tm_train_base[1], &quot;s \n&quot;)
 cat(&quot;Time for training Advanced Model=&quot;, tm_train_adv[1], &quot;s \n&quot;)
 }</code></pre>
-<pre><code>## Time for training models (Baseline + Advanced)= 30.669 s 
-## Time for training Baseline Model= 10.39 s 
-## Time for training Advanced Model= 19.325 s</code></pre>
+<pre><code>## Time for training models (Baseline + Advanced)= 30.202 s 
+## Time for training Baseline Model= 10.507 s 
+## Time for training Advanced Model= 19.383 s</code></pre>
 <pre class="r"><code>if(run.test){
 cat(&quot;Time for making predictions (Baseline + Advanced)=&quot;, tm_test[1], &quot;s \n&quot;)
 cat(&quot;Time for making predictions with Baseline Model=&quot;, tm_test_base[1], &quot;s \n&quot;)
