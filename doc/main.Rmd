@@ -3,6 +3,7 @@ title: 'Project 3: Main Script'
 author: "Ka Heng (Helen) Lo"
 date: "March 24, 2017"
 output:
+  word_document: default
   pdf_document: default
   html_document: default
 ---
@@ -17,7 +18,7 @@ if(!require("EBImage")){
 }
 
 
-needed <- setdiff(c("gbm", "data.table", "e1071", "class", "adabag","caret"),
+needed <- setdiff(c("gbm", "data.table", "e1071", "class", "adabag","caret", "xgboost"),
                   rownames(installed.packages()))
 if (length(needed) > 0 ){
   install.packages(needed)
@@ -29,6 +30,7 @@ library(e1071)
 library(class)
 library(adabag)
 library(caret)
+library(xgboost)
 ```
 
 ### Import class labels for training images  
@@ -426,5 +428,5 @@ if(run.test){
 cat("Time for making predictions (Baseline + Advanced)=", tm_test[1], "s \n")
 cat("Time for making predictions with Baseline Model=", tm_test_base[1], "s \n")
 cat("Time for making predictions with Advanced Model=", tm_test_adv[1], "s \n")
-}
+} 
 ```
