@@ -404,6 +404,12 @@ if(run.test){
   tm_test_adv <- system.time(pred_test_adv <- test(fit_train = fit_train_adv, 
                                                    dat_test_adv = dat_test_new, 
                                                    model="advanced"))
+  
+  lab_temp <- read.csv("../data/test/labels_temp.csv")
+  lab_temp[,2] <- pred_test_base
+  lab_temp[,3] <- pred_test_adv
+  
+  write.csv(lab_temp,file="../data/test/labels.csv")
 }
 
 ```
