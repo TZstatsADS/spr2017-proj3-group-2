@@ -300,8 +300,8 @@ In the summary table, the models under consideration are ranked by best (min) er
 ```{r exp_setup}
 run.train=TRUE # train 'best' model 
 run.feature.train=TRUE # process features for training set
-run.test=FALSE # run evaluation on an independent test set
-run.feature.test=FALSE # process features for test set
+run.test=TRUE # run evaluation on an independent test set
+run.feature.test=TRUE # process features for test set
 ```
 
 ### Import given SIFT features new visual features of the test set  
@@ -376,15 +376,15 @@ if(run.train){
 ```
 
 ### Make predictions  
-Here we call the ```test()``` function in ```test.R```. Feed the Baseline Model and the Advanced Model with the completely holdout testing data.  
+Here we call the ```test()``` function in ```test.R```. Feed the Baseline Model and the Advanced Model with the completely holdout testing data given in class.  
 ```{r test}
 #################################################################################################
 #to test the test() function, get predictions on training data for base model and advanced model
-load(file="../output/fit_train.Rdata")
-load(file="../output/dat_train_sift.Rdata")
-load(file="../output/dat_train_new.Rdata")
-(pred_train <- test(fit_train = fit_train, dat_test_base = dat_train_sift,
-                   dat_test_adv = dat_train_new))
+#load(file="../output/fit_train.Rdata")
+#load(file="../output/dat_train_sift.Rdata")
+#load(file="../output/dat_train_new.Rdata")
+#(pred_train <- test(fit_train = fit_train, dat_test_base = dat_train_sift,
+#                   dat_test_adv = dat_train_new))
 #################################################################################################
 #Make predictions and record the time it takes 
 tm_test=NA
