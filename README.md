@@ -27,6 +27,7 @@ Term: Spring 2017
 + Jia Hui Tan: 
 	+ Wrote function to tune GBM (baseline model) and function to train *best* GBM; tuned & trained based on SIFT features and three new feature sets
 	+ Edited and organized Github 
+	+ Edited train.R and main.R accordingly 
 	
 + Bo Peng: 
 	+ Feature Extraction: SIFT- resize+adaptive, SIFT- resize, SIFT- adaptive
